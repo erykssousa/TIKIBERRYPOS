@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App Açaí</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; }
+  .seccao { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+  h3 { margin-top: 0; font-size: 18px; }
+  label { display: block; margin-bottom: 10px; font-size: 16px; }
+  input[type="text"], input[type="password"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; margin-bottom: 10px; }
+  button { width: 100%; padding: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 18px; }
+  #ecran-app { display: none; }
+</style>
+</head>
+<body>
+
+<div id="ecran-login" class="seccao">
+  <h3>Login de Funcionário</h3>
+  <input type="text" id="usuario" placeholder="Utilizador">
+  <input type="password" id="palavra-passe" placeholder="Palavra-passe">
+  <button onclick="fazerLogin()">Entrar</button>
+</div>
+
+<div id="ecran-app">
+  <div class="seccao">
+    <p>Ligado como: <span id="nome-operador" style="font-weight: bold;"></span></p>
+  </div>
+
+  <div class="seccao">
+    <h3>Nome do Cliente</h3>
+    <input type="text" id="cliente" placeholder="Escreve o nome do cliente">
+  </div>
+
+  <div class="seccao">
+    <h3>Escolhe o Artigo</h3>
+    <label><input type="radio" name="artigo" value="Acai Pequeno"> Açaí Pequeno</label>
+    <label><input type="radio" name="artigo" value="Acai Medio"> Açaí Médio</label>
+    <label><input type="radio" name="artigo" value="Acai Grande"> Açaí Grande</label>
+  </div>
+
+  <div class="seccao">
+    <h3>Escolhe os Toppings</h3>
+    <label><input type="checkbox" name="topping" value="Morango"> Morango</label>
+    <label><input type="checkbox" name="topping" value="Banana"> Banana</label>
+    <label><input type="checkbox" name="topping" value="Granola"> Granola</label>
+    <label><input type="checkbox" name="topping" value="Leite Condensado"> Leite Condensado</label>
+    <label><input type="checkbox" name="topping" value="Mel"> Mel</label>
+    <label><input type="checkbox" name="topping" value="Leite em Po"> Leite em Pó</label>
+    <label><input type="checkbox" name="topping" value="Kiwi"> Kiwi</label>
+    <label><input type="checkbox" name="topping" value="Manga"> Manga</label>
+    <label><input type="checkbox" name="topping" value="Amendoim"> Amendoim</label>
+    <label><input type="checkbox" name="topping" value="Nutella"> Nutella</label>
+  </div>
+
+  <div class="seccao">
+    <h3>Método de Pagamento</h3>
+    <label><input type="radio" name="pagamento" value="MBWay"> MBWay</label>
+    <label><input type="radio" name="pagamento" value="Dinheiro"> Dinheiro</label>
+    <label><input type="radio" name="pagamento" value="SumUp"> SumUp</label>
+  </div>
+
+  <button onclick="registarVenda()">Registar Venda</button>
+</div>
+
+<script>
+  const urlScript = "https://script.google.com/macros/s/AKfycbydfxS5wia2mq_BihJkp3uIm-wWh0KN1V865tDyh3AOL274z8WmhX6RrfQttfEbRbgtqA/exec";
+  let funcionarioLogado = "";
+
+  const utilizadoresValidos = {
+    "eryk": "eryk",
+    "hugo": "hugo"
+  };
+
+  function fazerLogin() {
+    const user = document.getElementById("usuario").value;
+    const pass = document.getElementById("palavra-passe").value;
+
+    if (utilizadoresValidos[user] && utilizadoresValidos[user] === pass) {
+      funcionarioLogado = user;
+      document.getElementById("nome-operador").innerText = user;
+      document.getElementById("ecran-login").style.display = "none";
+      document.getElementById("ecran-app").style.display = "block";
+    } else {
+      alert("Utilizador ou palavra-passe incorretos.");
+    }
+  }
+
+  function registarVenda() {
+    const nomeCliente = document.getElementById("cliente").value;
+    const artigoSelecionado = document.querySelector('input[name="artigo"]:checked');
+    const artigo = artigoSelecionado ? artigoSelecionado.value : "";
+
+    const checkboxes = document.querySelectorAll('input[name="topping"]:checked');
+    let toppings = [];
+    for (let i = 0; i < checkboxes.length; i++) {
+      toppings.push(checkboxes[i].value);
+    }
+    const toppingsTexto = toppings.join(", ");
+
+    const pagamentoSelecionado = document.querySelector('input[name="pagamento"]:checked');
+    const pagamento = pagamentoSelecionado ? pagamentoSelecionado.value : "";
+
+    if (!nomeCliente || !artigo || !pagamento) {
+      alert("Por favor, preenche o nome, escolhe o artigo e o método de pagamento.");
+      return;
+    }
+
+    const agora = new Date();
+    const dataVenda = agora.toLocaleDateString('pt-PT');
+    const horaVenda = agora.getHours().toString().padStart(2, '0') + ':' +
+                      agora.getMinutes().toString().padStart(2, '0') + ':' +
+                      agora.getSeconds().toString().padStart(2, '0');
+
+    const dados = {
+      data: dataVenda,
+      hora: horaVenda,
+      artigo: artigo,
+      toppings: toppingsTexto,
+      pagamento: pagamento,
+      cliente: nomeCliente,
+      funcionario: funcionarioLogado
+    };
+
+    if (navigator.onLine) {
+      enviarParaExcel(dados);
+    } else {
+      guardarLocalmente(dados);
+    }
+
+    limparFormulario();
+  }
+
+  function enviarParaExcel(dados) {
+    fetch(urlScript, {
+      method: "POST",
+      mode: "no-cors",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(dados)
+    }).then(() => {
+      alert("Venda registada com sucesso na folha de cálculo!");
+    }).catch((erro) => {
+      alert("Erro de rede detetado. A guardar no telemóvel para tentar novamente mais tarde.");
+      guardarLocalmente(dados);
+    });
+  }
+
+  function guardarLocalmente(dados) {
+    let vendasPendentes = localStorage.getItem('vendasAtrasadas');
+    if (vendasPendentes) {
+      vendasPendentes = JSON.parse(vendasPendentes);
+    } else {
+      vendasPendentes = [];
+    }
+    vendasPendentes.push(dados);
+    localStorage.setItem('vendasAtrasadas', JSON.stringify(vendasPendentes));
+    alert("Estás sem internet. A venda foi guardada na memória e será enviada quando a rede voltar.");
+  }
+
+  function sincronizarVendasAtrasadas() {
+    if (navigator.onLine) {
+      let vendasPendentes = localStorage.getItem('vendasAtrasadas');
+      if (vendasPendentes) {
+        vendasPendentes = JSON.parse(vendasPendentes);
+        if (vendasPendentes.length > 0) {
+          const vendaAtual = vendasPendentes[0];
+          fetch(urlScript, {
+            method: "POST",
+            mode: "no-cors",
+            cache: "no-cache",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(vendaAtual)
+          }).then(() => {
+            vendasPendentes.shift();
+            localStorage.setItem('vendasAtrasadas', JSON.stringify(vendasPendentes));
+            sincronizarVendasAtrasadas();
+          }).catch(() => {
+            console.log("A aguardar melhor ligação para enviar dados atrasados.");
+          });
+        }
+      }
+    }
+  }
+
+  function limparFormulario() {
+    document.getElementById("cliente").value = "";
+    const artigoSelecionado = document.querySelector('input[name="artigo"]:checked');
+    if(artigoSelecionado) artigoSelecionado.checked = false;
+    const pagamentoSelecionado = document.querySelector('input[name="pagamento"]:checked');
+    if(pagamentoSelecionado) pagamentoSelecionado.checked = false;
+    const checkboxes = document.querySelectorAll('input[name="topping"]:checked');
+    for (let i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = false;
+    }
+  }
+
+  window.addEventListener('online', sincronizarVendasAtrasadas);
+  setInterval(sincronizarVendasAtrasadas, 30000);
+</script>
+
+</body>
+</html>

@@ -27,13 +27,14 @@
   .nome-topping { font-size: 13px; text-align: center; flex-grow: 1; padding: 0 4px; line-height: 1.2; word-wrap: break-word; }
   .topping-label input:checked + .topping-card { border-color: #4CAF50; background-color: #e8f5e9; }
 
-  .ticket-etiqueta { font-family: 'Courier New', Courier, monospace; background-color: #fff; border: 1px solid #000; width: 250px; height: 150px; overflow: hidden; margin-bottom: 20px; color: #000; text-align: center; padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; }
-  .ticket-obrigado { font-size: 16px; text-transform: uppercase; margin: 0; line-height: 1.1; margin-top: 5px; }
+  .ticket-etiqueta { position: relative; font-family: 'Courier New', Courier, monospace; background-color: #fff; border: 1px solid #000; width: 250px; height: 150px; overflow: hidden; margin-bottom: 20px; color: #000; text-align: center; padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; }
+  .ticket-obrigado { font-size: 16px; text-transform: uppercase; margin: 0; line-height: 1.1; margin-top: 2px; }
   .ticket-separador { font-size: 11px; letter-spacing: 2px; margin: 2px 0; overflow: hidden; white-space: nowrap; line-height: 1; }
-  .linha-tamanho { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 2px; }
+  .linha-tamanho { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 0; }
   .logo-ticket { width: 35px; height: 35px; object-fit: contain; filter: grayscale(100%) contrast(200%); }
   .ticket-tamanho { font-size: 13px; text-transform: uppercase; margin: 0; line-height: 1.1; }
-  .ticket-toppings { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; font-size: 12px; text-align: left; padding: 0 5px; margin-top: 2px; line-height: 1.1; }
+  .ticket-toppings { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; font-size: 12px; text-align: left; padding: 0 15px 0 5px; margin-top: 0; line-height: 1.1; }
+  .ticket-insta { position: absolute; right: 5px; bottom: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-size: 10px; letter-spacing: 1px; color: #000; }
   
   .item-carrinho { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9; }
   .item-cabecalho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -69,7 +70,7 @@
     <div class="seccao">
       <h3>Escolhe o Artigo</h3>
       <label><input type="radio" name="artigo" value="Acai Pequeno"> Açaí Pequeno (6.00€)</label>
-      <label><input type="radio" name="artigo" value="Acai Medio"> Açaí Médio (8.00€)</label>
+      <label><input type="radio" name="artigo" value="Acai Medio"> Açaí Médio (7.50€)</label>
       <label><input type="radio" name="artigo" value="Acai Grande"> Açaí Grande (9.50€)</label>
     </div>
 
@@ -278,13 +279,13 @@
 
   const precosTamanhos = {
     "Acai Pequeno": 6.00,
-    "Acai Medio": 8.0,
+    "Acai Medio": 7.50,
     "Acai Grande": 9.50
   };
 
   const utilizadoresValidos = {
     "eryk": "1234",
-    "hugo": "1234"
+    "funcionario1": "5678"
   };
 
   window.onload = function() {
@@ -570,10 +571,11 @@
             <div class="ticket-tamanho">${tamanhoEtiqueta}</div>
             <img src="logo.png" class="logo-ticket">
           </div>
-          <div class="ticket-separador">- - - - - - - - - - - - - -</div>
+          <div class="ticket-separador" style="margin-bottom: 0;">- - - - - - - - - - - - - -</div>
           <div class="ticket-toppings">
             ${toppingsTicketHTML}
           </div>
+          <div class="ticket-insta">@tikiberryacai</div>
         </div>
       `;
       previewContainer.innerHTML += ticketHTML;

@@ -27,7 +27,11 @@
   .nome-topping { font-size: 13px; text-align: center; flex-grow: 1; padding: 0 4px; line-height: 1.2; word-wrap: break-word; }
   .topping-label input:checked + .topping-card { border-color: #4CAF50; background-color: #e8f5e9; }
 
-  .ticket-individual { font-family: 'Courier New', Courier, monospace; background-color: #fdfae6; padding: 15px; border: 2px dashed #bbb; margin-bottom: 20px; font-size: 14px; line-height: 1.5; color: #333; }
+  .ticket-etiqueta { font-family: 'Courier New', Courier, monospace; background-color: #fff; border: 1px solid #000; width: 250px; height: 150px; overflow: hidden; margin-bottom: 20px; color: #000; text-align: center; padding: 10px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; }
+  .ticket-obrigado { font-size: 14px; text-transform: uppercase; margin-bottom: 2px; }
+  .ticket-separador { font-size: 12px; letter-spacing: 2px; margin: 4px 0; overflow: hidden; white-space: nowrap; }
+  .ticket-tamanho { font-size: 14px; text-transform: uppercase; margin-bottom: 2px; }
+  .ticket-toppings { font-size: 12px; text-align: left; line-height: 1.2; padding-left: 10px; }
   
   .item-carrinho { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9; }
   .item-cabecalho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -63,7 +67,7 @@
     <div class="seccao">
       <h3>Escolhe o Artigo</h3>
       <label><input type="radio" name="artigo" value="Acai Pequeno"> Açaí Pequeno (6.00€)</label>
-      <label><input type="radio" name="artigo" value="Acai Medio"> Açaí Médio (8.00€)</label>
+      <label><input type="radio" name="artigo" value="Acai Medio"> Açaí Médio (7.50€)</label>
       <label><input type="radio" name="artigo" value="Acai Grande"> Açaí Grande (9.50€)</label>
     </div>
 
@@ -223,8 +227,8 @@
     <div id="lista-revisao"></div>
 
     <div class="seccao">
-      <h3>Pré-visualização dos Tickets</h3>
-      <div id="ticket-preview"></div>
+      <h3>Pré-visualização das Etiquetas</h3>
+      <div id="ticket-preview" style="display: flex; flex-direction: column; align-items: center;"></div>
     </div>
 
     <button onclick="irParaPagamento()">Avançar para Pagamento</button>
@@ -272,7 +276,7 @@
 
   const precosTamanhos = {
     "Acai Pequeno": 6.00,
-    "Acai Medio": 8.0,
+    "Acai Medio": 7.50,
     "Acai Grande": 9.50
   };
 
@@ -377,7 +381,6 @@
     const preco = precosTamanhos[artigo] || 0;
     const checkboxes = document.querySelectorAll('input[name="topping"]:checked');
     let listaToppingsTexto = [];
-    let listaToppingsHTML = "";
     let listaToppingsRaw = [];
     
     for (let i = 0; i < checkboxes.length; i++) {
@@ -388,18 +391,11 @@
       
       if (dose === 1) {
         listaToppingsTexto.push("Mais " + nome);
-        listaToppingsHTML += "+ Mais " + nome + "<br>";
       } else if (dose === -1) {
         listaToppingsTexto.push("Menos " + nome);
-        listaToppingsHTML += "- Menos " + nome + "<br>";
       } else {
         listaToppingsTexto.push(nome);
-        listaToppingsHTML += "  " + nome + "<br>";
       }
-    }
-    
-    if (listaToppingsTexto.length === 0) {
-      listaToppingsHTML = "  Sem toppings<br>";
     }
     
     const novoCopo = {
@@ -408,7 +404,6 @@
       preco: preco,
       cliente: "",
       toppingsTexto: listaToppingsTexto.join(", "),
-      toppingsHTML: listaToppingsHTML,
       toppingsRaw: listaToppingsRaw
     };
     
@@ -491,7 +486,7 @@
   }
 
   function atualizarNomeCopo(index, valor) {
-    carrinho[index].cliente = valor;
+    carrinho[index].cliente = valor.toUpperCase();
   }
 
   function removerDoCarrinho(index) {
@@ -521,7 +516,7 @@
             <button class="btn-remover" onclick="removerDoCarrinho(${i})">-</button>
           </div>
           <div class="item-toppings">${copo.toppingsTexto || "Sem toppings"}</div>
-          <input type="text" id="nome-cliente-${i}" placeholder="Nome para este copo" value="${nomeValue}" oninput="atualizarNomeCopo(${i}, this.value); atualizarTicket()">
+          <input type="text" id="nome-cliente-${i}" placeholder="NOME PARA ESTE COPO" value="${nomeValue}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase(); atualizarNomeCopo(${i}, this.value); atualizarTicket()">
         </div>
       `;
     }
@@ -534,29 +529,35 @@
     let previewContainer = document.getElementById("ticket-preview");
     previewContainer.innerHTML = "";
     
-    const agora = new Date();
-    const dataVenda = agora.toLocaleDateString('pt-PT');
-    const horaVenda = agora.getHours().toString().padStart(2, '0') + ':' + agora.getMinutes().toString().padStart(2, '0');
-    
     for (let i = 0; i < carrinho.length; i++) {
       const copo = carrinho[i];
-      const nomeCliente = copo.cliente ? copo.cliente : "A aguardar nome...";
+      const nomeCliente = copo.cliente ? copo.cliente : "A AGUARDAR...";
+      
+      let toppingsTicketHTML = "";
+      if (copo.toppingsRaw && copo.toppingsRaw.length > 0) {
+        for (let j = 0; j < copo.toppingsRaw.length; j++) {
+          const tr = copo.toppingsRaw[j];
+          if (tr.dose === 1) {
+            toppingsTicketHTML += "+ " + tr.nome + "<br>";
+          } else if (tr.dose === -1) {
+            toppingsTicketHTML += "- " + tr.nome + "<br>";
+          } else {
+            toppingsTicketHTML += tr.nome + "<br>";
+          }
+        }
+      } else {
+        toppingsTicketHTML = "SEM TOPPINGS<br>";
+      }
       
       let ticketHTML = `
-        <div class="ticket-individual">
-          <div style="text-align: center; margin-bottom: 10px;">
-            <span style="font-size: 18px;">LOJA DE AÇAÍ</span><br>
-            Talão Copo ${i + 1} de ${carrinho.length}
+        <div class="ticket-etiqueta">
+          <div class="ticket-obrigado">OBRIGADO ${nomeCliente}</div>
+          <div class="ticket-separador">- - - - - - - - - - - - - -</div>
+          <div class="ticket-tamanho">${copo.artigo}</div>
+          <div class="ticket-separador">- - - - - - - - - - - - - -</div>
+          <div class="ticket-toppings">
+            ${toppingsTicketHTML}
           </div>
-          Data: ${dataVenda} ${horaVenda}<br>
-          Operador: ${funcionarioLogado}<br>
-          Cliente: ${nomeCliente}<br>
-          -------------------------<br>
-          1x ${copo.artigo}<br>
-          <br>
-          Toppings:<br>
-          ${copo.toppingsHTML}
-          -------------------------
         </div>
       `;
       previewContainer.innerHTML += ticketHTML;
@@ -569,7 +570,6 @@
         alert(`Por favor, escreve o nome para o Copo ${i + 1} antes de avançares.`);
         return;
       }
-      carrinho[i].cliente = carrinho[i].cliente.trim();
     }
     document.getElementById("ecran-revisao").style.display = "none";
     document.getElementById("ecran-pagamento").style.display = "block";

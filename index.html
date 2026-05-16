@@ -8,12 +8,14 @@
   body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; }
   .seccao { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
   h3 { margin-top: 0; font-size: 18px; }
-  .subtitulo-categoria { margin-top: 15px; margin-bottom: 10px; font-weight: bold; color: #555; font-size: 16px; }
+  .subtitulo-categoria { margin-top: 15px; margin-bottom: 10px; font-weight: normal; color: #555; font-size: 16px; text-transform: uppercase; }
   label { display: block; margin-bottom: 10px; font-size: 16px; }
-  input[type="text"], input[type="password"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; margin-bottom: 10px; }
-  button { width: 100%; padding: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 18px; }
-  .btn-sair { background-color: #f44336; padding: 10px; font-size: 16px; margin-top: 10px; }
-  #ecran-app { display: none; }
+  input[type="text"], input[type="password"], input[type="number"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; margin-bottom: 10px; }
+  button { width: 100%; padding: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 18px; margin-bottom: 10px; cursor: pointer; }
+  .btn-secundario { background-color: #607d8b; }
+  .btn-sair { background-color: #f44336; padding: 10px; font-size: 16px; margin-top: 10px; margin-bottom: 0; }
+  .btn-adicionar { background-color: #ff9800; }
+  #ecran-app, #ecran-revisao, #ecran-pagamento { display: none; }
   
   .grelha-toppings { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .topping-label { display: block; margin: 0; cursor: pointer; }
@@ -24,6 +26,22 @@
   .btn-dose { background-color: #eee; border-radius: 4px; min-width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; color: #333; line-height: 1; user-select: none; }
   .nome-topping { font-size: 13px; text-align: center; flex-grow: 1; padding: 0 4px; line-height: 1.2; word-wrap: break-word; }
   .topping-label input:checked + .topping-card { border-color: #4CAF50; background-color: #e8f5e9; }
+
+  .ticket-individual { font-family: 'Courier New', Courier, monospace; background-color: #fdfae6; padding: 15px; border: 2px dashed #bbb; margin-bottom: 20px; font-size: 14px; line-height: 1.5; color: #333; }
+  
+  .item-carrinho { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9; }
+  .item-cabecalho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .item-titulo { font-size: 16px; font-weight: normal; color: #333; margin: 0; }
+  .btn-remover { background-color: #f44336; color: white; border: none; border-radius: 4px; width: 32px; height: 32px; font-size: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; padding: 0; margin-bottom: 0; }
+  .item-toppings { font-size: 14px; color: #666; margin-bottom: 15px; }
+  .resumo-rodape { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+  .contador-carrinho { font-size: 16px; color: #333; }
+  
+  .bloco-pagamento { padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; background-color: #fff; }
+  .titulo-pagamento { font-size: 18px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+  .valor-destaque { font-size: 24px; color: #4CAF50; text-align: right; margin-bottom: 15px; }
+  .calculadora-troco { background-color: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 10px; display: none; }
+  .valor-troco { font-size: 20px; font-weight: normal; color: #d32f2f; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -36,170 +54,227 @@
 </div>
 
 <div id="ecran-app">
-  <div class="seccao">
-    <p style="margin-top: 0;">Ligado como: <span id="nome-operador" style="font-weight: normal;"></span></p>
-    <button class="btn-sair" onclick="terminarSessao()">Terminar Sessão</button>
-  </div>
+  <div id="ecran-pedido">
+    <div class="seccao">
+      <p style="margin-top: 0; margin-bottom: 0;">Ligado como: <span id="nome-operador"></span></p>
+      <button class="btn-sair" onclick="terminarSessao()">Terminar Sessão</button>
+    </div>
 
-  <div class="seccao">
-    <h3>Nome do Cliente</h3>
-    <input type="text" id="cliente" placeholder="Escreve o nome do cliente">
-  </div>
+    <div class="seccao">
+      <h3>Escolhe o Artigo</h3>
+      <label><input type="radio" name="artigo" value="Acai Pequeno"> Açaí Pequeno (6.00€)</label>
+      <label><input type="radio" name="artigo" value="Acai Medio"> Açaí Médio (8.00€)</label>
+      <label><input type="radio" name="artigo" value="Acai Grande"> Açaí Grande (9.50€)</label>
+    </div>
 
-  <div class="seccao">
-    <h3>Escolhe o Artigo</h3>
-    <label><input type="radio" name="artigo" value="Acai Pequeno"> Açaí Pequeno</label>
-    <label><input type="radio" name="artigo" value="Acai Medio"> Açaí Médio</label>
-    <label><input type="radio" name="artigo" value="Acai Grande"> Açaí Grande</label>
-  </div>
+    <div class="seccao">
+      <h3>Escolhe os Toppings</h3>
+      
+      <div class="subtitulo-categoria">Molhos</div>
+      <div class="grelha-toppings" style="margin-bottom: 20px;">
+        <label class="topping-label">
+          <input type="checkbox" name="topping" value="Leite Condensado" data-dose="0" onchange="limparDose(this)">
+          <div class="topping-card">
+            <img src="leitec.png" alt="Leite Condensado">
+            <div class="controlo-dose">
+              <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+              <span class="nome-topping" data-texto="Leite Cond.">Leite Cond.</span>
+              <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+            </div>
+          </div>
+        </label>
 
-  <div class="seccao">
-    <h3>Escolhe os Toppings</h3>
+        <label class="topping-label">
+          <input type="checkbox" name="topping" value="Mel" data-dose="0" onchange="limparDose(this)">
+          <div class="topping-card">
+            <img src="mel.png" alt="Mel">
+            <div class="controlo-dose">
+              <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+              <span class="nome-topping" data-texto="Mel">Mel</span>
+              <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+            </div>
+          </div>
+        </label>
+
+        <label class="topping-label">
+          <input type="checkbox" name="topping" value="Manteiga Amendoim" data-dose="0" onchange="limparDose(this)">
+          <div class="topping-card">
+            <img src="manteiga.png" alt="Manteiga Amendoim">
+            <div class="controlo-dose">
+              <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+              <span class="nome-topping" data-texto="Manteiga A.">Manteiga A.</span>
+              <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+            </div>
+          </div>
+        </label>
+
+        <label class="topping-label">
+          <input type="checkbox" name="topping" value="Chocolate" data-dose="0" onchange="limparDose(this)">
+          <div class="topping-card">
+            <img src="chocolate.png" alt="Chocolate">
+            <div class="controlo-dose">
+              <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+              <span class="nome-topping" data-texto="Chocolate">Chocolate</span>
+              <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <div class="subtitulo-categoria">Crocantes</div>
+      <div class="grelha-toppings" style="margin-bottom: 20px;">
+        <label class="topping-label">
+          <input type="checkbox" name="topping" value="Granola" data-dose="0" onchange="limparDose(this)">
+          <div class="topping-card">
+            <img src="granola.png" alt="Granola">
+            <div class="controlo-dose">
+              <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+              <span class="nome-topping" data-texto="Granola">Granola</span>
+              <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+            </div>
+          </div>
+        </label>
+
+        <label class="topping-label">
+          <input type="checkbox" name="topping" value="Oreo" data-dose="0" onchange="limparDose(this)">
+          <div class="topping-card">
+            <img src="oreo.png" alt="Oreo">
+            <div class="controlo-dose">
+              <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+              <span class="nome-topping" data-texto="Oreo">Oreo</span>
+              <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+            </div>
+          </div>
+        </label>
+
+        <label class="topping-label">
+          <input type="checkbox" name="topping" value="Paçoca" data-dose="0" onchange="limparDose(this)">
+          <div class="topping-card">
+            <img src="pacoca.png" alt="Paçoca">
+            <div class="controlo-dose">
+              <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+              <span class="nome-topping" data-texto="Paçoca">Paçoca</span>
+              <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+            </div>
+          </div>
+        </label>
+
+        <label class="topping-label">
+          <input type="checkbox" name="topping" value="Leite em Po" data-dose="0" onchange="limparDose(this)">
+          <div class="topping-card">
+            <img src="leitep.png" alt="Leite em Pó">
+            <div class="controlo-dose">
+              <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+              <span class="nome-topping" data-texto="Leite em Pó">Leite em Pó</span>
+              <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <div class="subtitulo-categoria">Fruta</div>
+      <div class="grelha-toppings">
+        <label class="topping-label">
+          <input type="checkbox" name="topping" value="Banana" data-dose="0" onchange="limparDose(this)">
+          <div class="topping-card">
+            <img src="banana.png" alt="Banana">
+            <div class="controlo-dose">
+              <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+              <span class="nome-topping" data-texto="Banana">Banana</span>
+              <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+            </div>
+          </div>
+        </label>
+
+        <label class="topping-label">
+          <input type="checkbox" name="topping" value="Morango" data-dose="0" onchange="limparDose(this)">
+          <div class="topping-card">
+            <img src="morango.png" alt="Morango">
+            <div class="controlo-dose">
+              <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+              <span class="nome-topping" data-texto="Morango">Morango</span>
+              <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+            </div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <button class="btn-adicionar" onclick="adicionarAoCarrinho()">Adicionar ao Pedido</button>
+    <button id="btn-duplicar" class="btn-secundario" style="display: none;" onclick="copiarUltimoCopo()">Copiar Último Copo</button>
     
-    <div class="subtitulo-categoria">Molhos</div>
-    <div class="grelha-toppings" style="margin-bottom: 20px;">
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Leite Condensado" data-dose="0" onchange="limparDose(this)">
-        <div class="topping-card">
-          <img src="leitec.png" alt="Leite Condensado">
-          <div class="controlo-dose">
-            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
-            <span class="nome-topping" data-texto="Leite Cond.">Leite Cond.</span>
-            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
-          </div>
-        </div>
-      </label>
-
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Mel" data-dose="0" onchange="limparDose(this)">
-        <div class="topping-card">
-          <img src="mel.png" alt="Mel">
-          <div class="controlo-dose">
-            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
-            <span class="nome-topping" data-texto="Mel">Mel</span>
-            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
-          </div>
-        </div>
-      </label>
-
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Manteiga Amendoim" data-dose="0" onchange="limparDose(this)">
-        <div class="topping-card">
-          <img src="manteiga.png" alt="Manteiga Amendoim">
-          <div class="controlo-dose">
-            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
-            <span class="nome-topping" data-texto="Manteiga A.">Manteiga A.</span>
-            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
-          </div>
-        </div>
-      </label>
-
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Chocolate" data-dose="0" onchange="limparDose(this)">
-        <div class="topping-card">
-          <img src="chocolate.png" alt="Chocolate">
-          <div class="controlo-dose">
-            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
-            <span class="nome-topping" data-texto="Chocolate">Chocolate</span>
-            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
-          </div>
-        </div>
-      </label>
+    <div class="resumo-rodape">
+      <span class="contador-carrinho" id="texto-contador">0 copos no pedido</span>
     </div>
 
-    <div class="subtitulo-categoria">Crocantes</div>
-    <div class="grelha-toppings" style="margin-bottom: 20px;">
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Granola" data-dose="0" onchange="limparDose(this)">
-        <div class="topping-card">
-          <img src="granola.png" alt="Granola">
-          <div class="controlo-dose">
-            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
-            <span class="nome-topping" data-texto="Granola">Granola</span>
-            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
-          </div>
-        </div>
-      </label>
-
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Oreo" data-dose="0" onchange="limparDose(this)">
-        <div class="topping-card">
-          <img src="oreo.png" alt="Oreo">
-          <div class="controlo-dose">
-            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
-            <span class="nome-topping" data-texto="Oreo">Oreo</span>
-            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
-          </div>
-        </div>
-      </label>
-
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Paçoca" data-dose="0" onchange="limparDose(this)">
-        <div class="topping-card">
-          <img src="pacoca.png" alt="Paçoca">
-          <div class="controlo-dose">
-            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
-            <span class="nome-topping" data-texto="Paçoca">Paçoca</span>
-            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
-          </div>
-        </div>
-      </label>
-
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Leite em Po" data-dose="0" onchange="limparDose(this)">
-        <div class="topping-card">
-          <img src="leitep.png" alt="Leite Pó">
-          <div class="controlo-dose">
-            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
-            <span class="nome-topping" data-texto="Leite em Pó">Leite em Pó</span>
-            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
-          </div>
-        </div>
-      </label>
-    </div>
-
-    <div class="subtitulo-categoria">Fruta</div>
-    <div class="grelha-toppings">
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Banana" data-dose="0" onchange="limparDose(this)">
-        <div class="topping-card">
-          <img src="banana.png" alt="Banana">
-          <div class="controlo-dose">
-            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
-            <span class="nome-topping" data-texto="Banana">Banana</span>
-            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
-          </div>
-        </div>
-      </label>
-
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Morango" data-dose="0" onchange="limparDose(this)">
-        <div class="topping-card">
-          <img src="morango.png" alt="Morango">
-          <div class="controlo-dose">
-            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
-            <span class="nome-topping" data-texto="Morango">Morango</span>
-            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
-          </div>
-        </div>
-      </label>
-    </div>
-
+    <button onclick="irParaRevisao()">Avançar para Revisão</button>
   </div>
 
-  <div class="seccao">
-    <h3>Método de Pagamento</h3>
-    <label><input type="radio" name="pagamento" value="MBWay"> MBWay</label>
-    <label><input type="radio" name="pagamento" value="Dinheiro"> Dinheiro</label>
-    <label><input type="radio" name="pagamento" value="SumUp"> SumUp</label>
+  <div id="ecran-revisao">
+    <div class="seccao">
+      <button class="btn-secundario" onclick="voltarAoPedido()">Voltar ao Pedido</button>
+    </div>
+
+    <div class="seccao">
+      <h3>Revisão de Pedido e Nomes</h3>
+      <p>Confere os copos e escreve o nome do cliente em cada um.</p>
+    </div>
+
+    <div id="lista-revisao"></div>
+
+    <div class="seccao">
+      <h3>Pré-visualização dos Tickets</h3>
+      <div id="ticket-preview"></div>
+    </div>
+
+    <button onclick="irParaPagamento()">Avançar para Pagamento</button>
   </div>
 
-  <button onclick="registarVenda()">Registar Venda</button>
+  <div id="ecran-pagamento">
+    <div class="seccao">
+      <button class="btn-secundario" onclick="voltarARevisao()">Voltar à Revisão</button>
+    </div>
+
+    <div class="seccao">
+      <h3>Tipo de Pagamento</h3>
+      <label><input type="radio" name="tipo_conta" value="unica" checked onchange="atualizarInterfacePagamento()"> Conta Única (Um pagamento para tudo)</label>
+      <label><input type="radio" name="tipo_conta" value="separada" onchange="atualizarInterfacePagamento()"> Contas Separadas (Cada um paga o seu)</label>
+    </div>
+
+    <div id="area-pagamento-global" style="display: none;">
+      <div class="bloco-pagamento">
+        <div class="titulo-pagamento">Pagamento Total</div>
+        <div class="valor-destaque" id="valor-total-global">0.00 €</div>
+        
+        <label><input type="radio" name="pag_global" value="MBWay" onchange="verificarDinheiroGlobal(this.value)"> MBWay</label>
+        <label><input type="radio" name="pag_global" value="Dinheiro" onchange="verificarDinheiroGlobal(this.value)"> Dinheiro</label>
+        <label><input type="radio" name="pag_global" value="SumUp" onchange="verificarDinheiroGlobal(this.value)"> SumUp</label>
+        
+        <div id="calculadora-global" class="calculadora-troco">
+          <label>Valor Entregue (€):</label>
+          <input type="number" id="recebido-global" step="0.01" oninput="calcularTrocoGlobal()">
+          <div class="valor-troco" id="troco-global">Troco: 0.00 €</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="area-pagamento-separado" style="display: none;">
+    </div>
+
+    <button onclick="registarVenda()">Imprimir Tickets e Gravar Venda</button>
+  </div>
 </div>
 
 <script>
   const urlScript = "https://script.google.com/macros/s/AKfycbydfxS5wia2mq_BihJkp3uIm-wWh0KN1V865tDyh3AOL274z8WmhX6RrfQttfEbRbgtqA/exec";
   let funcionarioLogado = "";
+  let carrinho = [];
+
+  const precosTamanhos = {
+    "Acai Pequeno": 6.00,
+    "Acai Medio": 8.0,
+    "Acai Grande": 9.50
+  };
 
   const utilizadoresValidos = {
     "eryk": "1234",
@@ -217,6 +292,7 @@
       document.getElementById("nome-operador").innerText = funcionarioLogado;
       document.getElementById("ecran-login").style.display = "none";
       document.getElementById("ecran-app").style.display = "block";
+      document.getElementById("ecran-pedido").style.display = "block";
     }
   }
 
@@ -230,6 +306,7 @@
       document.getElementById("nome-operador").innerText = user;
       document.getElementById("ecran-login").style.display = "none";
       document.getElementById("ecran-app").style.display = "block";
+      document.getElementById("ecran-pedido").style.display = "block";
     } else {
       alert("Utilizador ou palavra-passe incorretos.");
     }
@@ -238,7 +315,12 @@
   function terminarSessao() {
     localStorage.removeItem('funcionarioLogado');
     funcionarioLogado = "";
+    carrinho = [];
+    atualizarContador();
     document.getElementById("ecran-app").style.display = "none";
+    document.getElementById("ecran-pedido").style.display = "none";
+    document.getElementById("ecran-revisao").style.display = "none";
+    document.getElementById("ecran-pagamento").style.display = "none";
     document.getElementById("ecran-login").style.display = "block";
     document.getElementById("usuario").value = "";
     document.getElementById("palavra-passe").value = "";
@@ -284,33 +366,317 @@
     }
   }
 
-  function registarVenda() {
-    const nomeCliente = document.getElementById("cliente").value;
+  function adicionarAoCarrinho() {
     const artigoSelecionado = document.querySelector('input[name="artigo"]:checked');
-    const artigo = artigoSelecionado ? artigoSelecionado.value : "";
-
+    if (!artigoSelecionado) {
+      alert("Por favor, escolhe primeiro o tamanho do açaí.");
+      return;
+    }
+    
+    const artigo = artigoSelecionado.value;
+    const preco = precosTamanhos[artigo] || 0;
     const checkboxes = document.querySelectorAll('input[name="topping"]:checked');
-    let toppings = [];
+    let listaToppingsTexto = [];
+    let listaToppingsHTML = "";
+    let listaToppingsRaw = [];
+    
     for (let i = 0; i < checkboxes.length; i++) {
       const dose = parseInt(checkboxes[i].getAttribute('data-dose')) || 0;
       const nome = checkboxes[i].value;
       
+      listaToppingsRaw.push({nome: nome, dose: dose});
+      
       if (dose === 1) {
-        toppings.push("Mais " + nome);
+        listaToppingsTexto.push("Mais " + nome);
+        listaToppingsHTML += "+ Mais " + nome + "<br>";
       } else if (dose === -1) {
-        toppings.push("Menos " + nome);
+        listaToppingsTexto.push("Menos " + nome);
+        listaToppingsHTML += "- Menos " + nome + "<br>";
       } else {
-        toppings.push(nome);
+        listaToppingsTexto.push(nome);
+        listaToppingsHTML += "  " + nome + "<br>";
       }
     }
-    const toppingsTexto = toppings.join(", ");
+    
+    if (listaToppingsTexto.length === 0) {
+      listaToppingsHTML = "  Sem toppings<br>";
+    }
+    
+    const novoCopo = {
+      id: Date.now() + Math.random(),
+      artigo: artigo,
+      preco: preco,
+      cliente: "",
+      toppingsTexto: listaToppingsTexto.join(", "),
+      toppingsHTML: listaToppingsHTML,
+      toppingsRaw: listaToppingsRaw
+    };
+    
+    carrinho.push(novoCopo);
+    atualizarContador();
+    limparFormularioPedido();
+  }
 
-    const pagamentoSelecionado = document.querySelector('input[name="pagamento"]:checked');
-    const pagamento = pagamentoSelecionado ? pagamentoSelecionado.value : "";
+  function copiarUltimoCopo() {
+    if (carrinho.length === 0) return;
+    
+    limparFormularioPedido();
+    
+    const ultimoCopo = carrinho[carrinho.length - 1];
+    
+    const radioArtigo = document.querySelector(`input[name="artigo"][value="${ultimoCopo.artigo}"]`);
+    if(radioArtigo) radioArtigo.checked = true;
+    
+    if (ultimoCopo.toppingsRaw) {
+      for (let i = 0; i < ultimoCopo.toppingsRaw.length; i++) {
+        const toppingRaw = ultimoCopo.toppingsRaw[i];
+        const checkbox = document.querySelector(`input[name="topping"][value="${toppingRaw.nome}"]`);
+        if (checkbox) {
+          checkbox.checked = true;
+          checkbox.setAttribute('data-dose', toppingRaw.dose);
+          const textoLabel = checkbox.closest('.topping-label').querySelector('.nome-topping');
+          const textoOriginal = textoLabel.getAttribute('data-texto');
+          if (toppingRaw.dose === 1) {
+            textoLabel.innerText = "Mais " + textoOriginal;
+          } else if (toppingRaw.dose === -1) {
+            textoLabel.innerText = "Menos " + textoOriginal;
+          } else {
+            textoLabel.innerText = textoOriginal;
+          }
+        }
+      }
+    }
+  }
 
-    if (!nomeCliente || !artigo || !pagamento) {
-      alert("Por favor, preenche o nome, escolhe o artigo e o método de pagamento.");
+  function atualizarContador() {
+    const texto = carrinho.length === 1 ? "1 copo no pedido" : carrinho.length + " copos no pedido";
+    document.getElementById("texto-contador").innerText = texto;
+    
+    const btnDuplicar = document.getElementById("btn-duplicar");
+    if (carrinho.length > 0) {
+      btnDuplicar.style.display = "block";
+    } else {
+      btnDuplicar.style.display = "none";
+    }
+  }
+
+  function limparFormularioPedido() {
+    const artigoSelecionado = document.querySelector('input[name="artigo"]:checked');
+    if(artigoSelecionado) artigoSelecionado.checked = false;
+    const checkboxes = document.querySelectorAll('input[name="topping"]:checked');
+    for (let i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = false;
+      limparDose(checkboxes[i]);
+    }
+  }
+
+  function irParaRevisao() {
+    if (carrinho.length === 0) {
+      alert("Não tens nenhum copo no pedido. Adiciona pelo menos um para avançar.");
       return;
+    }
+    document.getElementById("ecran-pedido").style.display = "none";
+    document.getElementById("ecran-revisao").style.display = "block";
+    atualizarInterfaceRevisao();
+  }
+
+  function voltarAoPedido() {
+    document.getElementById("ecran-revisao").style.display = "none";
+    document.getElementById("ecran-pedido").style.display = "block";
+  }
+
+  function voltarARevisao() {
+    document.getElementById("ecran-pagamento").style.display = "none";
+    document.getElementById("ecran-revisao").style.display = "block";
+  }
+
+  function atualizarNomeCopo(index, valor) {
+    carrinho[index].cliente = valor;
+  }
+
+  function removerDoCarrinho(index) {
+    carrinho.splice(index, 1);
+    atualizarContador();
+    
+    if (carrinho.length === 0) {
+      voltarAoPedido();
+      return;
+    }
+    
+    atualizarInterfaceRevisao();
+  }
+
+  function atualizarInterfaceRevisao() {
+    const listaContainer = document.getElementById("lista-revisao");
+    let htmlLista = "";
+    
+    for (let i = 0; i < carrinho.length; i++) {
+      const copo = carrinho[i];
+      const nomeValue = copo.cliente || "";
+      
+      htmlLista += `
+        <div class="item-carrinho">
+          <div class="item-cabecalho">
+            <div class="item-titulo">Copo ${i + 1}: ${copo.artigo}</div>
+            <button class="btn-remover" onclick="removerDoCarrinho(${i})">-</button>
+          </div>
+          <div class="item-toppings">${copo.toppingsTexto || "Sem toppings"}</div>
+          <input type="text" id="nome-cliente-${i}" placeholder="Nome para este copo" value="${nomeValue}" oninput="atualizarNomeCopo(${i}, this.value); atualizarTicket()">
+        </div>
+      `;
+    }
+    
+    listaContainer.innerHTML = htmlLista;
+    atualizarTicket();
+  }
+
+  function atualizarTicket() {
+    let previewContainer = document.getElementById("ticket-preview");
+    previewContainer.innerHTML = "";
+    
+    const agora = new Date();
+    const dataVenda = agora.toLocaleDateString('pt-PT');
+    const horaVenda = agora.getHours().toString().padStart(2, '0') + ':' + agora.getMinutes().toString().padStart(2, '0');
+    
+    for (let i = 0; i < carrinho.length; i++) {
+      const copo = carrinho[i];
+      const nomeCliente = copo.cliente ? copo.cliente : "A aguardar nome...";
+      
+      let ticketHTML = `
+        <div class="ticket-individual">
+          <div style="text-align: center; margin-bottom: 10px;">
+            <span style="font-size: 18px;">LOJA DE AÇAÍ</span><br>
+            Talão Copo ${i + 1} de ${carrinho.length}
+          </div>
+          Data: ${dataVenda} ${horaVenda}<br>
+          Operador: ${funcionarioLogado}<br>
+          Cliente: ${nomeCliente}<br>
+          -------------------------<br>
+          1x ${copo.artigo}<br>
+          <br>
+          Toppings:<br>
+          ${copo.toppingsHTML}
+          -------------------------
+        </div>
+      `;
+      previewContainer.innerHTML += ticketHTML;
+    }
+  }
+
+  function irParaPagamento() {
+    for (let i = 0; i < carrinho.length; i++) {
+      if (!carrinho[i].cliente || carrinho[i].cliente.trim() === "") {
+        alert(`Por favor, escreve o nome para o Copo ${i + 1} antes de avançares.`);
+        return;
+      }
+      carrinho[i].cliente = carrinho[i].cliente.trim();
+    }
+    document.getElementById("ecran-revisao").style.display = "none";
+    document.getElementById("ecran-pagamento").style.display = "block";
+    atualizarInterfacePagamento();
+  }
+
+  function atualizarInterfacePagamento() {
+    const tipoConta = document.querySelector('input[name="tipo_conta"]:checked').value;
+    const areaGlobal = document.getElementById("area-pagamento-global");
+    const areaSeparada = document.getElementById("area-pagamento-separado");
+    
+    let totalGlobal = 0;
+    carrinho.forEach(copo => totalGlobal += copo.preco);
+    
+    if (tipoConta === "unica") {
+      areaSeparada.style.display = "none";
+      areaGlobal.style.display = "block";
+      document.getElementById("valor-total-global").innerText = totalGlobal.toFixed(2) + " €";
+      document.getElementById("recebido-global").value = "";
+      document.getElementById("troco-global").innerText = "Troco: 0.00 €";
+      const radiosGlobais = document.querySelectorAll('input[name="pag_global"]');
+      radiosGlobais.forEach(radio => radio.checked = false);
+      document.getElementById("calculadora-global").style.display = "none";
+    } else {
+      areaGlobal.style.display = "none";
+      areaSeparada.style.display = "block";
+      
+      let htmlSeparado = "";
+      for (let i = 0; i < carrinho.length; i++) {
+        const copo = carrinho[i];
+        htmlSeparado += `
+          <div class="bloco-pagamento">
+            <div class="titulo-pagamento">Copo ${i + 1}: ${copo.cliente}</div>
+            <div class="valor-destaque">${copo.preco.toFixed(2)} €</div>
+            <div style="margin-bottom: 10px;">
+              <label style="font-size: 14px;"><input type="radio" name="pag_item_${i}" value="MBWay" onchange="verificarDinheiroSeparado(${i}, this.value)"> MBWay</label>
+              <label style="font-size: 14px;"><input type="radio" name="pag_item_${i}" value="Dinheiro" onchange="verificarDinheiroSeparado(${i}, this.value)"> Dinheiro</label>
+              <label style="font-size: 14px;"><input type="radio" name="pag_item_${i}" value="SumUp" onchange="verificarDinheiroSeparado(${i}, this.value)"> SumUp</label>
+            </div>
+            <div id="calculadora-item-${i}" class="calculadora-troco">
+              <label>Valor Entregue (€):</label>
+              <input type="number" id="recebido-item-${i}" step="0.01" oninput="calcularTrocoSeparado(${i}, ${copo.preco})">
+              <div class="valor-troco" id="troco-item-${i}">Troco: 0.00 €</div>
+            </div>
+          </div>
+        `;
+      }
+      areaSeparada.innerHTML = htmlSeparado;
+    }
+  }
+
+  function verificarDinheiroGlobal(metodo) {
+    const calculadora = document.getElementById("calculadora-global");
+    if (metodo === "Dinheiro") {
+      calculadora.style.display = "block";
+    } else {
+      calculadora.style.display = "none";
+    }
+  }
+
+  function calcularTrocoGlobal() {
+    let totalGlobal = 0;
+    carrinho.forEach(copo => totalGlobal += copo.preco);
+    const valorRecebido = parseFloat(document.getElementById("recebido-global").value) || 0;
+    let troco = valorRecebido - totalGlobal;
+    if (troco < 0) troco = 0;
+    document.getElementById("troco-global").innerText = "Troco: " + troco.toFixed(2) + " €";
+  }
+
+  function verificarDinheiroSeparado(index, metodo) {
+    const calculadora = document.getElementById(`calculadora-item-${index}`);
+    if (metodo === "Dinheiro") {
+      calculadora.style.display = "block";
+    } else {
+      calculadora.style.display = "none";
+    }
+  }
+
+  function calcularTrocoSeparado(index, preco) {
+    const valorRecebido = parseFloat(document.getElementById(`recebido-item-${index}`).value) || 0;
+    let troco = valorRecebido - preco;
+    if (troco < 0) troco = 0;
+    document.getElementById(`troco-item-${index}`).innerText = "Troco: " + troco.toFixed(2) + " €";
+  }
+
+  function registarVenda() {
+    const tipoConta = document.querySelector('input[name="tipo_conta"]:checked').value;
+    let pagamentos = [];
+    
+    if (tipoConta === "unica") {
+      const pagamentoGlobal = document.querySelector('input[name="pag_global"]:checked');
+      if (!pagamentoGlobal) {
+        alert("Por favor, escolhe o método de pagamento para concluir a venda.");
+        return;
+      }
+      for (let i = 0; i < carrinho.length; i++) {
+        pagamentos.push(pagamentoGlobal.value);
+      }
+    } else {
+      for (let i = 0; i < carrinho.length; i++) {
+        const pagamentoItem = document.querySelector(`input[name="pag_item_${i}"]:checked`);
+        if (!pagamentoItem) {
+          alert(`Por favor, escolhe o método de pagamento para o Copo ${i + 1} de ${carrinho[i].cliente}.`);
+          return;
+        }
+        pagamentos.push(pagamentoItem.value);
+      }
     }
 
     const agora = new Date();
@@ -319,23 +685,30 @@
                       agora.getMinutes().toString().padStart(2, '0') + ':' +
                       agora.getSeconds().toString().padStart(2, '0');
 
-    const dados = {
-      data: dataVenda,
-      hora: horaVenda,
-      artigo: artigo,
-      toppings: toppingsTexto,
-      pagamento: pagamento,
-      cliente: nomeCliente,
-      funcionario: funcionarioLogado
-    };
+    for (let i = 0; i < carrinho.length; i++) {
+      const dadosCopo = {
+        data: dataVenda,
+        hora: horaVenda,
+        artigo: carrinho[i].artigo,
+        toppings: carrinho[i].toppingsTexto,
+        pagamento: pagamentos[i],
+        cliente: carrinho[i].cliente,
+        funcionario: funcionarioLogado
+      };
 
-    if (navigator.onLine) {
-      enviarParaExcel(dados);
-    } else {
-      guardarLocalmente(dados);
+      if (navigator.onLine) {
+        enviarParaExcel(dadosCopo);
+      } else {
+        guardarLocalmente(dadosCopo);
+      }
     }
 
-    limparFormulario();
+    alert("Pedido registado com sucesso e enviado para impressão!");
+    carrinho = [];
+    atualizarContador();
+    
+    document.getElementById("ecran-pagamento").style.display = "none";
+    document.getElementById("ecran-pedido").style.display = "block";
   }
 
   function enviarParaExcel(dados) {
@@ -347,10 +720,8 @@
         "Content-Type": "application/json"
       },
       body: JSON.stringify(dados)
-    }).then(() => {
-      alert("Venda registada com sucesso na folha de cálculo!");
     }).catch((erro) => {
-      alert("Erro de rede detetado. A guardar no telemóvel para tentar novamente mais tarde.");
+      console.log("Erro de rede. Guardado localmente.");
       guardarLocalmente(dados);
     });
   }
@@ -364,7 +735,6 @@
     }
     vendasPendentes.push(dados);
     localStorage.setItem('vendasAtrasadas', JSON.stringify(vendasPendentes));
-    alert("Estás sem internet. A venda foi guardada na memória e será enviada quando a rede voltar.");
   }
 
   function sincronizarVendasAtrasadas() {
@@ -386,24 +756,9 @@
             vendasPendentes.shift();
             localStorage.setItem('vendasAtrasadas', JSON.stringify(vendasPendentes));
             sincronizarVendasAtrasadas();
-          }).catch(() => {
-            console.log("A aguardar melhor ligação para enviar dados atrasados.");
-          });
+          }).catch(() => {});
         }
       }
-    }
-  }
-
-  function limparFormulario() {
-    document.getElementById("cliente").value = "";
-    const artigoSelecionado = document.querySelector('input[name="artigo"]:checked');
-    if(artigoSelecionado) artigoSelecionado.checked = false;
-    const pagamentoSelecionado = document.querySelector('input[name="pagamento"]:checked');
-    if(pagamentoSelecionado) pagamentoSelecionado.checked = false;
-    const checkboxes = document.querySelectorAll('input[name="topping"]:checked');
-    for (let i = 0; i < checkboxes.length; i++) {
-      checkboxes[i].checked = false;
-      limparDose(checkboxes[i]);
     }
   }
 

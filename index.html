@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
@@ -12,6 +13,14 @@
   input[type="text"], input[type="password"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; margin-bottom: 10px; }
   button { width: 100%; padding: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 18px; }
   #ecran-app { display: none; }
+  
+  .grelha-toppings { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .topping-label { display: block; margin: 0; cursor: pointer; }
+  .topping-label input { display: none; }
+  .topping-card { border: 2px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; transition: all 0.2s; }
+  .topping-card img { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; }
+  .topping-card span { display: block; font-size: 14px; }
+  .topping-label input:checked + .topping-card { border-color: #4CAF50; background-color: #e8f5e9; }
 </style>
 </head>
 <body>
@@ -25,7 +34,7 @@
 
 <div id="ecran-app">
   <div class="seccao">
-    <p>Ligado como: <span id="nome-operador" style="font-weight: bold;"></span></p>
+    <p>Ligado como: <span id="nome-operador"></span></p>
   </div>
 
   <div class="seccao">
@@ -42,16 +51,89 @@
 
   <div class="seccao">
     <h3>Escolhe os Toppings</h3>
-    <label><input type="checkbox" name="topping" value="Morango"> Morango</label>
-    <label><input type="checkbox" name="topping" value="Banana"> Banana</label>
-    <label><input type="checkbox" name="topping" value="Granola"> Granola</label>
-    <label><input type="checkbox" name="topping" value="Leite Condensado"> Leite Condensado</label>
-    <label><input type="checkbox" name="topping" value="Mel"> Mel</label>
-    <label><input type="checkbox" name="topping" value="Leite em Po"> Leite em Pó</label>
-    <label><input type="checkbox" name="topping" value="Kiwi"> Kiwi</label>
-    <label><input type="checkbox" name="topping" value="Manga"> Manga</label>
-    <label><input type="checkbox" name="topping" value="Amendoim"> Amendoim</label>
-    <label><input type="checkbox" name="topping" value="Nutella"> Nutella</label>
+    <div class="grelha-toppings">
+      
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Morango">
+        <div class="topping-card">
+          <img src="https://via.placeholder.com/150?text=Morango" alt="Morango">
+          <span>Morango</span>
+        </div>
+      </label>
+
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Banana">
+        <div class="topping-card">
+          <img src="https://via.placeholder.com/150?text=Banana" alt="Banana">
+          <span>Banana</span>
+        </div>
+      </label>
+
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Granola">
+        <div class="topping-card">
+          <img src="https://via.placeholder.com/150?text=Granola" alt="Granola">
+          <span>Granola</span>
+        </div>
+      </label>
+
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Leite Condensado">
+        <div class="topping-card">
+          <img src="https://via.placeholder.com/150?text=Leite+Cond" alt="Leite Condensado">
+          <span>Leite Cond.</span>
+        </div>
+      </label>
+
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Mel">
+        <div class="topping-card">
+          <img src="https://via.placeholder.com/150?text=Mel" alt="Mel">
+          <span>Mel</span>
+        </div>
+      </label>
+
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Leite em Po">
+        <div class="topping-card">
+          <img src="https://via.placeholder.com/150?text=Leite+em+Po" alt="Leite em Pó">
+          <span>Leite em Pó</span>
+        </div>
+      </label>
+
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Kiwi">
+        <div class="topping-card">
+          <img src="https://via.placeholder.com/150?text=Kiwi" alt="Kiwi">
+          <span>Kiwi</span>
+        </div>
+      </label>
+
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Manga">
+        <div class="topping-card">
+          <img src="https://via.placeholder.com/150?text=Manga" alt="Manga">
+          <span>Manga</span>
+        </div>
+      </label>
+
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Amendoim">
+        <div class="topping-card">
+          <img src="https://via.placeholder.com/150?text=Amendoim" alt="Amendoim">
+          <span>Amendoim</span>
+        </div>
+      </label>
+
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Nutella">
+        <div class="topping-card">
+          <img src="https://via.placeholder.com/150?text=Nutella" alt="Nutella">
+          <span>Nutella</span>
+        </div>
+      </label>
+
+    </div>
   </div>
 
   <div class="seccao">
@@ -69,8 +151,8 @@
   let funcionarioLogado = "";
 
   const utilizadoresValidos = {
-    "eryk": "eryk",
-    "hugo": "hugo"
+    "eryk": "1234",
+    "funcionario1": "5678"
   };
 
   function fazerLogin() {

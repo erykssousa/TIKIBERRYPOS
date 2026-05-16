@@ -18,9 +18,11 @@
   .grelha-toppings { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .topping-label { display: block; margin: 0; cursor: pointer; }
   .topping-label input { display: none; }
-  .topping-card { border: 2px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; transition: all 0.2s; }
+  .topping-card { border: 2px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; transition: all 0.2s; min-height: 145px; box-sizing: border-box; }
   .topping-card img { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; }
-  .topping-card span { display: block; font-size: 14px; }
+  .controlo-dose { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; width: 100%; }
+  .btn-dose { background-color: #eee; border-radius: 4px; min-width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; color: #333; line-height: 1; user-select: none; }
+  .nome-topping { font-size: 13px; text-align: center; flex-grow: 1; padding: 0 4px; line-height: 1.2; word-wrap: break-word; }
   .topping-label input:checked + .topping-card { border-color: #4CAF50; background-color: #e8f5e9; }
 </style>
 </head>
@@ -57,34 +59,50 @@
     <div class="subtitulo-categoria">Molhos</div>
     <div class="grelha-toppings" style="margin-bottom: 20px;">
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Leite Condensado">
+        <input type="checkbox" name="topping" value="Leite Condensado" data-dose="0" onchange="limparDose(this)">
         <div class="topping-card">
           <img src="leitec.png" alt="Leite Condensado">
-          <span>Leite Cond.</span>
+          <div class="controlo-dose">
+            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+            <span class="nome-topping" data-texto="Leite Cond.">Leite Cond.</span>
+            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+          </div>
         </div>
       </label>
 
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Mel">
+        <input type="checkbox" name="topping" value="Mel" data-dose="0" onchange="limparDose(this)">
         <div class="topping-card">
           <img src="mel.png" alt="Mel">
-          <span>Mel</span>
+          <div class="controlo-dose">
+            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+            <span class="nome-topping" data-texto="Mel">Mel</span>
+            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+          </div>
         </div>
       </label>
 
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Manteiga Amendoim">
+        <input type="checkbox" name="topping" value="Manteiga Amendoim" data-dose="0" onchange="limparDose(this)">
         <div class="topping-card">
           <img src="manteiga.png" alt="Manteiga Amendoim">
-          <span>Manteiga A.</span>
+          <div class="controlo-dose">
+            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+            <span class="nome-topping" data-texto="Manteiga A.">Manteiga A.</span>
+            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+          </div>
         </div>
       </label>
 
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Chocolate">
+        <input type="checkbox" name="topping" value="Chocolate" data-dose="0" onchange="limparDose(this)">
         <div class="topping-card">
-          <img src="nut.png" alt="Chocolate">
-          <span>Chocolate</span>
+          <img src="chocolate.png" alt="Chocolate">
+          <div class="controlo-dose">
+            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+            <span class="nome-topping" data-texto="Chocolate">Chocolate</span>
+            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+          </div>
         </div>
       </label>
     </div>
@@ -92,34 +110,50 @@
     <div class="subtitulo-categoria">Crocantes</div>
     <div class="grelha-toppings" style="margin-bottom: 20px;">
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Granola">
+        <input type="checkbox" name="topping" value="Granola" data-dose="0" onchange="limparDose(this)">
         <div class="topping-card">
           <img src="granola.png" alt="Granola">
-          <span>Granola</span>
+          <div class="controlo-dose">
+            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+            <span class="nome-topping" data-texto="Granola">Granola</span>
+            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+          </div>
         </div>
       </label>
 
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Oreo">
+        <input type="checkbox" name="topping" value="Oreo" data-dose="0" onchange="limparDose(this)">
         <div class="topping-card">
           <img src="oreo.png" alt="Oreo">
-          <span>Oreo</span>
+          <div class="controlo-dose">
+            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+            <span class="nome-topping" data-texto="Oreo">Oreo</span>
+            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+          </div>
         </div>
       </label>
 
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Paçoca">
+        <input type="checkbox" name="topping" value="Paçoca" data-dose="0" onchange="limparDose(this)">
         <div class="topping-card">
           <img src="pacoca.png" alt="Paçoca">
-          <span>Paçoca</span>
+          <div class="controlo-dose">
+            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+            <span class="nome-topping" data-texto="Paçoca">Paçoca</span>
+            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+          </div>
         </div>
       </label>
 
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Leite em Po">
+        <input type="checkbox" name="topping" value="Leite em Po" data-dose="0" onchange="limparDose(this)">
         <div class="topping-card">
           <img src="leitep.png" alt="Leite em Pó">
-          <span>Leite em Pó</span>
+          <div class="controlo-dose">
+            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+            <span class="nome-topping" data-texto="Leite em Pó">Leite em Pó</span>
+            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+          </div>
         </div>
       </label>
     </div>
@@ -127,18 +161,26 @@
     <div class="subtitulo-categoria">Fruta</div>
     <div class="grelha-toppings">
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Banana">
+        <input type="checkbox" name="topping" value="Banana" data-dose="0" onchange="limparDose(this)">
         <div class="topping-card">
           <img src="banana.png" alt="Banana">
-          <span>Banana</span>
+          <div class="controlo-dose">
+            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+            <span class="nome-topping" data-texto="Banana">Banana</span>
+            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+          </div>
         </div>
       </label>
 
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Morango">
+        <input type="checkbox" name="topping" value="Morango" data-dose="0" onchange="limparDose(this)">
         <div class="topping-card">
           <img src="morango.png" alt="Morango">
-          <span>Morango</span>
+          <div class="controlo-dose">
+            <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
+            <span class="nome-topping" data-texto="Morango">Morango</span>
+            <span class="btn-dose" onclick="alterarDose(event, this, 1)">+</span>
+          </div>
         </div>
       </label>
     </div>
@@ -202,6 +244,46 @@
     document.getElementById("palavra-passe").value = "";
   }
 
+  function alterarDose(evento, elemento, direcao) {
+    evento.preventDefault();
+    evento.stopPropagation();
+    
+    const cartao = elemento.closest('.topping-label');
+    const checkbox = cartao.querySelector('input[type="checkbox"]');
+    const textoLabel = cartao.querySelector('.nome-topping');
+    const textoOriginal = textoLabel.getAttribute('data-texto');
+    
+    let dose = parseInt(checkbox.getAttribute('data-dose')) || 0;
+    
+    if (direcao === 1) {
+      dose = dose < 1 ? dose + 1 : 1;
+    } else {
+      dose = dose > -1 ? dose - 1 : -1;
+    }
+    
+    checkbox.setAttribute('data-dose', dose);
+    
+    if (!checkbox.checked) {
+      checkbox.checked = true;
+    }
+    
+    if (dose === 1) {
+      textoLabel.innerText = "Mais " + textoOriginal;
+    } else if (dose === -1) {
+      textoLabel.innerText = "Menos " + textoOriginal;
+    } else {
+      textoLabel.innerText = textoOriginal;
+    }
+  }
+
+  function limparDose(checkbox) {
+    if (!checkbox.checked) {
+      checkbox.setAttribute('data-dose', '0');
+      const textoLabel = checkbox.closest('.topping-label').querySelector('.nome-topping');
+      textoLabel.innerText = textoLabel.getAttribute('data-texto');
+    }
+  }
+
   function registarVenda() {
     const nomeCliente = document.getElementById("cliente").value;
     const artigoSelecionado = document.querySelector('input[name="artigo"]:checked');
@@ -210,7 +292,16 @@
     const checkboxes = document.querySelectorAll('input[name="topping"]:checked');
     let toppings = [];
     for (let i = 0; i < checkboxes.length; i++) {
-      toppings.push(checkboxes[i].value);
+      const dose = parseInt(checkboxes[i].getAttribute('data-dose')) || 0;
+      const nome = checkboxes[i].value;
+      
+      if (dose === 1) {
+        toppings.push("Mais " + nome);
+      } else if (dose === -1) {
+        toppings.push("Menos " + nome);
+      } else {
+        toppings.push(nome);
+      }
     }
     const toppingsTexto = toppings.join(", ");
 
@@ -312,6 +403,7 @@
     const checkboxes = document.querySelectorAll('input[name="topping"]:checked');
     for (let i = 0; i < checkboxes.length; i++) {
       checkboxes[i].checked = false;
+      limparDose(checkboxes[i]);
     }
   }
 

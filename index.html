@@ -8,6 +8,7 @@
   body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; }
   .seccao { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
   h3 { margin-top: 0; font-size: 18px; }
+  .subtitulo-categoria { margin-top: 15px; margin-bottom: 10px; font-weight: bold; color: #555; font-size: 16px; }
   label { display: block; margin-bottom: 10px; font-size: 16px; }
   input[type="text"], input[type="password"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; margin-bottom: 10px; }
   button { width: 100%; padding: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 18px; }
@@ -52,32 +53,9 @@
 
   <div class="seccao">
     <h3>Escolhe os Toppings</h3>
-    <div class="grelha-toppings">
-      
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Morango">
-        <div class="topping-card">
-          <img src="morango.png" alt="Morango">
-          <span>Morango</span>
-        </div>
-      </label>
-
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Banana">
-        <div class="topping-card">
-          <img src="banana.png" alt="Banana">
-          <span>Banana</span>
-        </div>
-      </label>
-
-      <label class="topping-label">
-        <input type="checkbox" name="topping" value="Granola">
-        <div class="topping-card">
-          <img src="granola.png" alt="Granola">
-          <span>Granola</span>
-        </div>
-      </label>
-
+    
+    <div class="subtitulo-categoria">Molhos</div>
+    <div class="grelha-toppings" style="margin-bottom: 20px;">
       <label class="topping-label">
         <input type="checkbox" name="topping" value="Leite Condensado">
         <div class="topping-card">
@@ -95,10 +73,29 @@
       </label>
 
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Leite em Po">
+        <input type="checkbox" name="topping" value="Manteiga Amendoim">
         <div class="topping-card">
-          <img src="leitep.png" alt="Leite em Pó">
-          <span>Leite em Pó</span>
+          <img src="manteiga.png" alt="Manteiga Amendoim">
+          <span>Manteiga A.</span>
+        </div>
+      </label>
+
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Chocolate">
+        <div class="topping-card">
+          <img src="chocolate.png" alt="Chocolate">
+          <span>Chocolate</span>
+        </div>
+      </label>
+    </div>
+
+    <div class="subtitulo-categoria">Crocantes</div>
+    <div class="grelha-toppings" style="margin-bottom: 20px;">
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Granola">
+        <div class="topping-card">
+          <img src="granola.png" alt="Granola">
+          <span>Granola</span>
         </div>
       </label>
 
@@ -111,14 +108,6 @@
       </label>
 
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Manteiga Amendoim">
-        <div class="topping-card">
-          <img src="manteiga.png" alt="Manteiga Amendoim">
-          <span>Manteiga A.</span>
-        </div>
-      </label>
-
-      <label class="topping-label">
         <input type="checkbox" name="topping" value="Paçoca">
         <div class="topping-card">
           <img src="pacoca.png" alt="Paçoca">
@@ -127,14 +116,33 @@
       </label>
 
       <label class="topping-label">
-        <input type="checkbox" name="topping" value="Nutella">
+        <input type="checkbox" name="topping" value="Leite em Po">
         <div class="topping-card">
-          <img src="nut.png" alt="Nutella">
-          <span>Nutella</span>
+          <img src="leitep.png" alt="Leite em Pó">
+          <span>Leite em Pó</span>
+        </div>
+      </label>
+    </div>
+
+    <div class="subtitulo-categoria">Fruta</div>
+    <div class="grelha-toppings">
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Banana">
+        <div class="topping-card">
+          <img src="banana.png" alt="Banana">
+          <span>Banana</span>
         </div>
       </label>
 
+      <label class="topping-label">
+        <input type="checkbox" name="topping" value="Morango">
+        <div class="topping-card">
+          <img src="morango.png" alt="Morango">
+          <span>Morango</span>
+        </div>
+      </label>
     </div>
+
   </div>
 
   <div class="seccao">

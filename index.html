@@ -33,7 +33,7 @@
   .ticket-obrigado { font-size: 16px; text-transform: uppercase; margin: 0; line-height: 1.1; margin-top: 2px; }
   .ticket-separador { font-size: 11px; letter-spacing: 2px; margin: 2px 0; overflow: hidden; white-space: nowrap; line-height: 1; }
   .linha-tamanho { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 0; }
-  .logo-ticket { width: 35px; height: 35px; object-fit: contain; filter: grayscale(100%) contrast(200%); }
+  .numero-pedido { font-size: 15px; font-weight: normal; margin: 0; }
   .ticket-tamanho { font-size: 13px; text-transform: uppercase; margin: 0; line-height: 1.1; }
   .ticket-toppings { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; font-size: 12px; text-align: left; padding: 0 15px 0 5px; margin-top: 0; line-height: 1.1; }
   .ticket-insta { position: absolute; right: 5px; bottom: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-size: 10px; letter-spacing: 1px; color: #000; }
@@ -275,7 +275,7 @@
 </div>
 
 <script>
-  const urlScript = "https://script.google.com/macros/s/AKfycbydfxS5wia2mq_BihJkp3uIm-wWh0KN1V865tDyh3AOL274z8WmhX6RrfQttfEbRbgtqA/exec";
+  const urlScript = "https://script.google.com/macros/s/AKfycbzUqzSI8oXGFRDGmRheZBgVBrygcDrtu6Yqcb0WhnxjAgTZGC94hZ2FS_jCZl0Xls7lNQ/exec";
   let funcionarioLogado = "";
   let carrinho = [];
 
@@ -333,6 +333,24 @@
     document.getElementById("ecran-login").style.display = "block";
     document.getElementById("usuario").value = "";
     document.getElementById("palavra-passe").value = "";
+  }
+  
+  function obterNumeroPedidoAtual() {
+    let num = localStorage.getItem('numeroPedidoLoja');
+    if (!num) {
+      num = 0;
+      localStorage.setItem('numeroPedidoLoja', num);
+    }
+    return parseInt(num);
+  }
+
+  function avancarNumeroPedido() {
+    let num = obterNumeroPedidoAtual();
+    num++;
+    if (num > 999) {
+      num = 0;
+    }
+    localStorage.setItem('numeroPedidoLoja', num);
   }
 
   function alterarDose(evento, elemento, direcao) {
@@ -534,6 +552,8 @@
     let previewContainer = document.getElementById("ticket-preview");
     previewContainer.innerHTML = "";
     
+    const numeroStr = obterNumeroPedidoAtual().toString().padStart(3, '0');
+    
     const abreviaturas = {
       "Leite Condensado": "Leite Con.",
       "Chocolate": "Choco",
@@ -569,9 +589,9 @@
           <div class="ticket-obrigado">OBRIGADO ${nomeCliente}</div>
           <div class="ticket-separador">- - - - - - - - - - - - - -</div>
           <div class="linha-tamanho">
-            <img src="logo.png" class="logo-ticket">
+            <div class="numero-pedido">#${numeroStr}</div>
             <div class="ticket-tamanho">${tamanhoEtiqueta}</div>
-            <img src="logo.png" class="logo-ticket">
+            <div class="numero-pedido">#${numeroStr}</div>
           </div>
           <div class="ticket-separador" style="margin-bottom: 0;">- - - - - - - - - - - - - -</div>
           <div class="ticket-toppings">
@@ -704,13 +724,17 @@
     const horaVenda = agora.getHours().toString().padStart(2, '0') + ':' +
                       agora.getMinutes().toString().padStart(2, '0') + ':' +
                       agora.getSeconds().toString().padStart(2, '0');
+                      
+    const numPedido = obterNumeroPedidoAtual();
 
     for (let i = 0; i < carrinho.length; i++) {
       const dadosCopo = {
+        pedido: numPedido,
         data: dataVenda,
         hora: horaVenda,
         artigo: carrinho[i].artigo,
         toppings: carrinho[i].toppingsTexto,
+        preco: carrinho[i].preco,
         pagamento: pagamentos[i],
         cliente: carrinho[i].cliente,
         funcionario: funcionarioLogado
@@ -722,6 +746,8 @@
         guardarLocalmente(dadosCopo);
       }
     }
+    
+    avancarNumeroPedido();
 
     alert("Pedido registado com sucesso e enviado para impressão!");
     carrinho = [];

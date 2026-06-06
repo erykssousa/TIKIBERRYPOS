@@ -31,7 +31,6 @@
   .nome-topping { font-size: 13px; text-align: center; flex-grow: 1; padding: 0 4px; line-height: 1.2; word-wrap: break-word; }
   .topping-label input:checked + .topping-card { border-color: #4CAF50; background-color: #e8f5e9; }
 
-  /* === TICKET ETIQUETA === */
   .ticket-etiqueta { position: relative; font-family: 'Quicksand', sans-serif; background-color: #fff; border: 1px solid #000; width: 250px; height: 150px; overflow: hidden; margin-bottom: 20px; color: #000; text-align: center; padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; }
   .ticket-pago-marca { position: absolute; top: 5px; right: 8px; font-size: 24px; color: #000; margin: 0; line-height: 1; font-family: Arial, sans-serif; }
   .ticket-obrigado { font-size: 16px; text-transform: uppercase; margin: 0; line-height: 1.1; margin-top: 2px; }
@@ -60,7 +59,6 @@
   .select-pagamento { padding: 10px; font-size: 16px; margin-top: 10px; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc; }
   .btn-guardar-hist { background-color: #4CAF50; margin-top: 10px; margin-bottom: 0; padding: 10px; font-size: 16px; }
 
-  /* === BLUETOOTH === */
   .bloco-bluetooth { background-color: #f3e5f5; border: 1px solid #ce93d8; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
   .bloco-bluetooth h3 { color: #6a1b9a; margin-top: 0; }
   .estado-bt { font-size: 14px; padding: 8px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; font-weight: bold; }
@@ -73,7 +71,6 @@
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="ecran-login" class="seccao">
   <h3>Login de Funcionário</h3>
   <input type="text" id="usuario" placeholder="Utilizador">
@@ -81,41 +78,21 @@
   <button onclick="fazerLogin()">Entrar</button>
 </div>
 
-<!-- MENU PRINCIPAL -->
 <div id="ecran-menu">
   <div class="seccao">
     <p style="margin-top: 0; font-size: 18px;">Ligado como: <span id="nome-operador-menu"></span></p>
     <button class="btn-menu" onclick="abrirVendas()">Vendas</button>
     <button class="btn-menu" style="background-color: #9c27b0;" onclick="abrirHistorico()">Histórico Pendente</button>
-    <button class="btn-menu" style="background-color: #7b1fa2;" onclick="abrirConfiguracaoImpressora()">🖨️ Impressora Bluetooth</button>
     <button class="btn-sair" style="width: 100%;" onclick="terminarSessao()">Terminar Sessão</button>
   </div>
 </div>
 
-<!-- ECRÃ IMPRESSORA (acedido pelo menu) -->
-<div id="ecran-impressora" style="display:none;">
-  <div class="seccao">
-    <button class="btn-secundario" onclick="voltarAoMenu()">Voltar ao Menu</button>
-  </div>
-  <div class="bloco-bluetooth">
-    <h3>🖨️ Impressora Bluetooth</h3>
-    <div class="estado-bt desligado" id="estado-bluetooth-menu">⚫ Desligada</div>
-    <button class="btn-bluetooth" onclick="ligarImpressora()">Ligar Impressora</button>
-    <div class="aviso-bluetooth" id="aviso-bluetooth-menu">
-      Prime "Ligar Impressora" e escolhe a tua impressora na lista que aparecer.<br>
-      Certifica-te que o Bluetooth está ativo no tablet.
-    </div>
-  </div>
-</div>
-
-<!-- ECRÃ PRINCIPAL DE VENDAS -->
 <div id="ecran-app">
   <div id="ecran-pedido">
     <div class="seccao">
       <button class="btn-secundario" onclick="voltarAoMenu()">Voltar ao Menu</button>
     </div>
 
-    <!-- BLOCO BLUETOOTH (resumido, dentro das vendas) -->
     <div class="bloco-bluetooth">
       <h3>🖨️ Impressora Bluetooth</h3>
       <div class="estado-bt desligado" id="estado-bluetooth-vendas">⚫ Desligada</div>
@@ -268,7 +245,6 @@
     <button onclick="irParaRevisao()">Avançar para Revisão</button>
   </div>
 
-  <!-- REVISÃO -->
   <div id="ecran-revisao">
     <div class="seccao">
       <button class="btn-secundario" onclick="voltarAoPedido()">Voltar ao Pedido</button>
@@ -285,7 +261,6 @@
     <button onclick="irParaPagamento()">Avançar para Pagamento</button>
   </div>
 
-  <!-- PAGAMENTO -->
   <div id="ecran-pagamento">
     <div class="seccao">
       <button class="btn-secundario" onclick="voltarARevisao()">Voltar à Revisão</button>
@@ -319,7 +294,6 @@
   </div>
 </div>
 
-<!-- HISTÓRICO -->
 <div id="ecran-historico">
   <div class="seccao">
     <button class="btn-secundario" onclick="voltarAoMenu()">Voltar ao Menu</button>
@@ -336,19 +310,14 @@
   let funcionarioLogado = "";
   let carrinho = [];
 
-  // ============================================================
-  //  BLUETOOTH — variáveis de estado
-  // ============================================================
   let dispositivoBT = null;
   let caracteristicaBT = null;
 
-  // UUIDs padrão ESC/POS BLE (compatível com a maioria das impressoras térmicas)
   const BT_SERVICE_UUID        = "000018f0-0000-1000-8000-00805f9b34fb";
   const BT_CHARACTERISTIC_UUID = "00002af1-0000-1000-8000-00805f9b34fb";
 
-  // Atualiza TODOS os indicadores de estado BT presentes na página
   function atualizarEstadoBT(estado, texto) {
-    ["estado-bluetooth-menu", "estado-bluetooth-vendas"].forEach(id => {
+    ["estado-bluetooth-vendas"].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
         el.className = "estado-bt " + estado;
@@ -357,9 +326,8 @@
     });
   }
 
-  // Atualiza TODOS os textos de aviso BT presentes na página
   function atualizarAvisoBT(texto) {
-    ["aviso-bluetooth-menu", "aviso-bluetooth-vendas"].forEach(id => {
+    ["aviso-bluetooth-vendas"].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.innerText = texto;
     });
@@ -380,7 +348,6 @@
         optionalServices: [BT_SERVICE_UUID]
       });
     } catch (e) {
-      // Se o UUID filtrado não for encontrado, faz scan genérico
       try {
         dispositivoBT = await navigator.bluetooth.requestDevice({
           acceptAllDevices: true,
@@ -415,10 +382,7 @@
     }
   }
 
-  // ============================================================
-  //  ESC/POS — construtor de comandos para impressão térmica
-  // ============================================================
-  function criarEscPos(copo, numeroPedido) {
+  function criarEscPos(copo, numeroPedido, metodoPagamento) {
     const ESC = 0x1B;
     const GS  = 0x1D;
     const LF  = 0x0A;
@@ -441,46 +405,42 @@
     function linha(texto) { return [...textBytes(texto), LF]; }
     function separador()  { return linha("--------------------------------"); }
 
-    // Formata um topping com prefixo (+/-) e padding fixo para coluna de 16 chars
     function formatarTopping(tr) {
       const nome = abreviaturas[tr.nome] ? abreviaturas[tr.nome] : tr.nome;
       let prefixo = "  ";
       if (tr.dose === 1)  prefixo = "+ ";
       if (tr.dose === -1) prefixo = "- ";
       const texto = prefixo + nome;
-      // Pad à direita até 16 caracteres para alinhar a segunda coluna
       return texto.padEnd(16).slice(0, 16);
     }
 
     const nomeCliente = copo.cliente || "CLIENTE";
     const tamanho     = copo.artigo.replace("Acai ", "").toUpperCase();
     const numStr      = numeroPedido ? "#" + numeroPedido : "";
+    let linhaTamanho = numStr + "  " + tamanho;
+
+    if (metodoPagamento === "Pagar Depois") {
+      linhaTamanho += " P\\";
+    }
 
     let bytes = [];
 
-    // Init / reset
     bytes.push(ESC, 0x40);
-
-    // Centralizar
     bytes.push(ESC, 0x61, 0x01);
 
-    // Negrito ON + tamanho duplo
     bytes.push(ESC, 0x45, 0x01);
     bytes.push(GS,  0x21, 0x11);
     bytes.push(...linha("OBRIGADO"));
     bytes.push(...linha(nomeCliente));
 
-    // Reset tamanho
     bytes.push(GS, 0x21, 0x00);
     bytes.push(...separador());
 
-    // Número do pedido + tamanho
     bytes.push(GS, 0x21, 0x01);
-    bytes.push(...linha(numStr + "  " + tamanho));
+    bytes.push(...linha(linhaTamanho));
     bytes.push(GS, 0x21, 0x00);
     bytes.push(...separador());
 
-    // Toppings — 2 por linha (coluna esquerda + coluna direita)
     bytes.push(ESC, 0x61, 0x00);
     bytes.push(ESC, 0x45, 0x00);
 
@@ -496,19 +456,16 @@
       bytes.push(...linha("  SEM TOPPINGS"));
     }
 
-    // Instagram
     bytes.push(ESC, 0x61, 0x01);
     bytes.push(...separador());
     bytes.push(...linha("@tikiberryacai"));
 
-    // Espaço final + corte de papel
     bytes.push(LF, LF, LF);
     bytes.push(GS, 0x56, 0x00);
 
     return new Uint8Array(bytes);
   }
 
-  // Envia dados em chunks (máx 20 bytes por pacote BLE)
   async function enviarParaImpressora(dados) {
     if (!caracteristicaBT) return false;
     const CHUNK = 20;
@@ -519,9 +476,6 @@
     }
     return true;
   }
-  // ============================================================
-  //  FIM BLUETOOTH
-  // ============================================================
 
   const precosTamanhos = {
     "Acai Pequeno": 6.00,
@@ -538,12 +492,11 @@
     verificarSessao();
   };
 
-  // ---- Navegação ----
-
   function esconderTudo() {
     ["ecran-login","ecran-menu","ecran-app","ecran-pedido","ecran-revisao",
-     "ecran-pagamento","ecran-historico","ecran-impressora"].forEach(id => {
-      document.getElementById(id).style.display = "none";
+     "ecran-pagamento","ecran-historico"].forEach(id => {
+      const ecra = document.getElementById(id);
+      if (ecra) ecra.style.display = "none";
     });
   }
 
@@ -597,13 +550,6 @@
     }
   }
 
-  function abrirConfiguracaoImpressora() {
-    esconderTudo();
-    document.getElementById("ecran-impressora").style.display = "block";
-  }
-
-  // ---- Numeração de pedidos ----
-
   function obterNumeroPedidoAtual() {
     let num = localStorage.getItem('numeroPedidoLoja');
     if (!num) { num = 0; localStorage.setItem('numeroPedidoLoja', num); }
@@ -621,8 +567,6 @@
     const inicial = funcionarioLogado ? funcionarioLogado.charAt(0).toUpperCase() : 'X';
     return inicial + num;
   }
-
-  // ---- Toppings / dose ----
 
   function alterarDose(evento, elemento, direcao) {
     evento.preventDefault();
@@ -648,8 +592,6 @@
       textoLabel.innerText = textoLabel.getAttribute('data-texto');
     }
   }
-
-  // ---- Carrinho ----
 
   function adicionarAoCarrinho() {
     const artigoSelecionado = document.querySelector('input[name="artigo"]:checked');
@@ -718,8 +660,6 @@
     }
   }
 
-  // ---- Revisão ----
-
   function irParaRevisao() {
     if (carrinho.length === 0) { alert("Não tens nenhum copo no pedido. Adiciona pelo menos um para avançar."); return; }
     document.getElementById("ecran-pedido").style.display = "none";
@@ -771,11 +711,15 @@
     atualizarPreviewTickets();
   }
 
-  // ---- Tickets HTML (pré-visualização) ----
-
   function gerarHtmlTicket(copo, numeroApresentacao, metodoPagamento) {
     const nomeCliente    = copo.cliente ? copo.cliente : "A AGUARDAR...";
     const tamanhoEtiqueta = copo.artigo.replace("Acai ", "").toUpperCase();
+
+    let indicacaoPagarDepois = "";
+    if (metodoPagamento === "Pagar Depois") {
+      indicacaoPagarDepois = " P\\";
+    }
+
     const abreviaturas = {
       "Leite Condensado": "Leite Con.",
       "Chocolate":        "Choco",
@@ -805,7 +749,7 @@
         <div class="ticket-separador">- - - - - - - - - - - - - -</div>
         <div class="linha-tamanho">
           <div class="numero-pedido">#${numeroApresentacao}</div>
-          <div class="ticket-tamanho">${tamanhoEtiqueta}</div>
+          <div class="ticket-tamanho">${tamanhoEtiqueta}${indicacaoPagarDepois}</div>
           <div class="numero-pedido">#${numeroApresentacao}</div>
         </div>
         <div class="ticket-separador" style="margin-bottom: 0;">- - - - - - - - - - - - - -</div>
@@ -823,8 +767,6 @@
       previewContainer.innerHTML += gerarHtmlTicket(carrinho[i], numeroStr, null);
     }
   }
-
-  // ---- Pagamento ----
 
   function irParaPagamento() {
     for (let i = 0; i < carrinho.length; i++) {
@@ -902,8 +844,6 @@
     document.getElementById(`troco-item-${index}`).innerText = "Troco: " + troco.toFixed(2) + " €";
   }
 
-  // ---- Registar Venda ----
-
   async function registarVenda() {
     const tipoConta = document.querySelector('input[name="tipo_conta"]:checked').value;
     let pagamentos  = [];
@@ -922,10 +862,9 @@
 
     const numPedidoStr = gerarIdPedidoUnico();
 
-    // --- IMPRESSÃO VIA BLUETOOTH ---
     if (caracteristicaBT) {
       for (let i = 0; i < carrinho.length; i++) {
-        const dados = criarEscPos(carrinho[i], numPedidoStr);
+        const dados = criarEscPos(carrinho[i], numPedidoStr, pagamentos[i]);
         await enviarParaImpressora(dados);
         await new Promise(r => setTimeout(r, 600));
       }
@@ -934,7 +873,6 @@
       if (!confirmar) return;
     }
 
-    // --- GRAVAR VENDA ---
     const agora     = new Date();
     const dataVenda = agora.toLocaleDateString('pt-PT');
     const horaVenda = agora.getHours().toString().padStart(2, '0') + ':' +
@@ -965,7 +903,6 @@
 
     avancarNumeroPedido();
 
-    // Pré-visualização secreta (mantida por compatibilidade)
     let impressaoSecreta = document.getElementById("area-impressao-secreta");
     impressaoSecreta.innerHTML = "";
     for (let i = 0; i < carrinho.length; i++) {
@@ -979,8 +916,6 @@
     document.getElementById("ecran-app").style.display    = "block";
     document.getElementById("ecran-pedido").style.display = "block";
   }
-
-  // ---- Histórico ----
 
   function guardarVendaNoHistorico(dadosCopo) {
     let hist = JSON.parse(localStorage.getItem('historicoVendas') || "[]");
@@ -1037,8 +972,6 @@
     else guardarFilaAtrasadas(dadosAtualizacao);
     renderizarListaHistorico();
   }
-
-  // ---- Sincronização com Google Sheets ----
 
   function enviarParaExcel(dados) {
     fetch(urlScript, {

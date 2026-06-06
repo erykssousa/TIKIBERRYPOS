@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>App Açaí</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
+
   body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; }
   .seccao { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
   h3 { margin-top: 0; font-size: 18px; }
@@ -15,8 +17,10 @@
   .btn-secundario { background-color: #607d8b; }
   .btn-sair { background-color: #f44336; padding: 10px; font-size: 16px; margin-top: 10px; margin-bottom: 0; }
   .btn-adicionar { background-color: #ff9800; }
-  #ecran-app, #ecran-revisao, #ecran-pagamento { display: none; }
-  
+  .btn-menu { background-color: #2196F3; margin-bottom: 15px; }
+
+  #ecran-menu, #ecran-app, #ecran-pedido, #ecran-revisao, #ecran-pagamento, #ecran-historico { display: none; }
+
   .grelha-toppings { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .topping-label { display: block; margin: 0; cursor: pointer; }
   .topping-label input { display: none; }
@@ -27,14 +31,17 @@
   .nome-topping { font-size: 13px; text-align: center; flex-grow: 1; padding: 0 4px; line-height: 1.2; word-wrap: break-word; }
   .topping-label input:checked + .topping-card { border-color: #4CAF50; background-color: #e8f5e9; }
 
-  .ticket-etiqueta { font-family: 'Courier New', Courier, monospace; background-color: #fff; border: 1px solid #000; width: 250px; height: 150px; overflow: hidden; margin-bottom: 20px; color: #000; text-align: center; padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; }
-  .ticket-obrigado { font-size: 16px; text-transform: uppercase; margin: 0; line-height: 1.1; margin-top: 5px; }
+  /* === TICKET ETIQUETA === */
+  .ticket-etiqueta { position: relative; font-family: 'Quicksand', sans-serif; background-color: #fff; border: 1px solid #000; width: 250px; height: 150px; overflow: hidden; margin-bottom: 20px; color: #000; text-align: center; padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; }
+  .ticket-pago-marca { position: absolute; top: 5px; right: 8px; font-size: 24px; color: #000; margin: 0; line-height: 1; font-family: Arial, sans-serif; }
+  .ticket-obrigado { font-size: 16px; text-transform: uppercase; margin: 0; line-height: 1.1; margin-top: 2px; }
   .ticket-separador { font-size: 11px; letter-spacing: 2px; margin: 2px 0; overflow: hidden; white-space: nowrap; line-height: 1; }
-  .linha-tamanho { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 2px; }
-  .logo-ticket { width: 35px; height: 35px; object-fit: contain; filter: grayscale(100%) contrast(200%); }
+  .linha-tamanho { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 0; }
+  .numero-pedido { font-size: 15px; font-weight: normal; margin: 0; }
   .ticket-tamanho { font-size: 13px; text-transform: uppercase; margin: 0; line-height: 1.1; }
-  .ticket-toppings { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; font-size: 12px; text-align: left; padding: 0 5px; margin-top: 2px; line-height: 1.1; }
-  
+  .ticket-toppings { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; font-size: 12px; text-align: left; padding: 0 15px 0 5px; margin-top: 0; line-height: 1.1; }
+  .ticket-insta { position: absolute; left: 5px; bottom: 8px; font-size: 10px; letter-spacing: 1px; color: #000; }
+
   .item-carrinho { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9; }
   .item-cabecalho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .item-titulo { font-size: 16px; font-weight: normal; color: #333; margin: 0; }
@@ -42,28 +49,31 @@
   .item-toppings { font-size: 14px; color: #666; margin-bottom: 15px; }
   .resumo-rodape { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
   .contador-carrinho { font-size: 16px; color: #333; }
-  
+
   .bloco-pagamento { padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; background-color: #fff; }
   .titulo-pagamento { font-size: 18px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
   .valor-destaque { font-size: 24px; color: #4CAF50; text-align: right; margin-bottom: 15px; }
   .calculadora-troco { background-color: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 10px; display: none; }
   .valor-troco { font-size: 20px; font-weight: normal; color: #d32f2f; margin-top: 10px; }
 
+  .historico-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 8px; background-color: #f9f9f9; }
+  .select-pagamento { padding: 10px; font-size: 16px; margin-top: 10px; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc; }
+  .btn-guardar-hist { background-color: #4CAF50; margin-top: 10px; margin-bottom: 0; padding: 10px; font-size: 16px; }
+
   /* === BLUETOOTH === */
-  .bloco-bluetooth { background-color: #f3e5f5; border: 1px solid #ce93d8; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+  .bloco-bluetooth { background-color: #f3e5f5; border: 1px solid #ce93d8; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
   .bloco-bluetooth h3 { color: #6a1b9a; margin-top: 0; }
   .estado-bt { font-size: 14px; padding: 8px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; font-weight: bold; }
   .estado-bt.desligado { background-color: #ffcdd2; color: #b71c1c; }
   .estado-bt.ligado { background-color: #c8e6c9; color: #1b5e20; }
   .estado-bt.aguardar { background-color: #fff9c4; color: #f57f17; }
   .btn-bluetooth { background-color: #7b1fa2; margin-bottom: 8px; }
-  .btn-imprimir { background-color: #1565c0; }
-  .btn-imprimir:disabled { background-color: #90a4ae; cursor: not-allowed; }
   .aviso-bluetooth { font-size: 13px; color: #555; background-color: #fff; border-radius: 6px; padding: 10px; margin-top: 8px; line-height: 1.4; }
 </style>
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="ecran-login" class="seccao">
   <h3>Login de Funcionário</h3>
   <input type="text" id="usuario" placeholder="Utilizador">
@@ -71,40 +81,66 @@
   <button onclick="fazerLogin()">Entrar</button>
 </div>
 
+<!-- MENU PRINCIPAL -->
+<div id="ecran-menu">
+  <div class="seccao">
+    <p style="margin-top: 0; font-size: 18px;">Ligado como: <span id="nome-operador-menu"></span></p>
+    <button class="btn-menu" onclick="abrirVendas()">Vendas</button>
+    <button class="btn-menu" style="background-color: #9c27b0;" onclick="abrirHistorico()">Histórico Pendente</button>
+    <button class="btn-menu" style="background-color: #7b1fa2;" onclick="abrirConfiguracaoImpressora()">🖨️ Impressora Bluetooth</button>
+    <button class="btn-sair" style="width: 100%;" onclick="terminarSessao()">Terminar Sessão</button>
+  </div>
+</div>
+
+<!-- ECRÃ IMPRESSORA (acedido pelo menu) -->
+<div id="ecran-impressora" style="display:none;">
+  <div class="seccao">
+    <button class="btn-secundario" onclick="voltarAoMenu()">Voltar ao Menu</button>
+  </div>
+  <div class="bloco-bluetooth">
+    <h3>🖨️ Impressora Bluetooth</h3>
+    <div class="estado-bt desligado" id="estado-bluetooth-menu">⚫ Desligada</div>
+    <button class="btn-bluetooth" onclick="ligarImpressora()">Ligar Impressora</button>
+    <div class="aviso-bluetooth" id="aviso-bluetooth-menu">
+      Prime "Ligar Impressora" e escolhe a tua impressora na lista que aparecer.<br>
+      Certifica-te que o Bluetooth está ativo no tablet.
+    </div>
+  </div>
+</div>
+
+<!-- ECRÃ PRINCIPAL DE VENDAS -->
 <div id="ecran-app">
   <div id="ecran-pedido">
     <div class="seccao">
-      <p style="margin-top: 0; margin-bottom: 0;">Ligado como: <span id="nome-operador"></span></p>
-      <button class="btn-sair" onclick="terminarSessao()">Terminar Sessão</button>
+      <button class="btn-secundario" onclick="voltarAoMenu()">Voltar ao Menu</button>
     </div>
 
-    <!-- BLOCO BLUETOOTH -->
+    <!-- BLOCO BLUETOOTH (resumido, dentro das vendas) -->
     <div class="bloco-bluetooth">
       <h3>🖨️ Impressora Bluetooth</h3>
-      <div class="estado-bt desligado" id="estado-bluetooth">⚫ Desligada</div>
+      <div class="estado-bt desligado" id="estado-bluetooth-vendas">⚫ Desligada</div>
       <button class="btn-bluetooth" onclick="ligarImpressora()">Ligar Impressora</button>
-      <div class="aviso-bluetooth" id="aviso-bluetooth">
-        Prima "Ligar Impressora" e escolhe a tua impressora na lista que aparecer.<br>
-        Certifica-te que o Bluetooth está ativo no tablet.
+      <div class="aviso-bluetooth" id="aviso-bluetooth-vendas">
+        Prima "Ligar Impressora" para conectar antes de registar a venda.
       </div>
     </div>
 
     <div class="seccao">
       <h3>Escolhe o Artigo</h3>
       <label><input type="radio" name="artigo" value="Acai Pequeno"> Açaí Pequeno (6.00€)</label>
-      <label><input type="radio" name="artigo" value="Acai Medio"> Açaí Médio (7.50€)</label>
+      <label><input type="radio" name="artigo" value="Acai Medio"> Açaí Médio (8.00€)</label>
       <label><input type="radio" name="artigo" value="Acai Grande"> Açaí Grande (9.50€)</label>
     </div>
 
     <div class="seccao">
       <h3>Escolhe os Toppings</h3>
-      
+
       <div class="subtitulo-categoria">Molhos</div>
       <div class="grelha-toppings" style="margin-bottom: 20px;">
         <label class="topping-label">
           <input type="checkbox" name="topping" value="Leite Condensado" data-dose="0" onchange="limparDose(this)">
           <div class="topping-card">
-            <img src="leitec.png" alt="Leite Condensado">
+            <img src="leitec.png" alt="Leite Condensado" onerror="this.style.display='none'">
             <div class="controlo-dose">
               <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
               <span class="nome-topping" data-texto="Leite Cond.">Leite Cond.</span>
@@ -115,7 +151,7 @@
         <label class="topping-label">
           <input type="checkbox" name="topping" value="Mel" data-dose="0" onchange="limparDose(this)">
           <div class="topping-card">
-            <img src="mel.png" alt="Mel">
+            <img src="mel.png" alt="Mel" onerror="this.style.display='none'">
             <div class="controlo-dose">
               <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
               <span class="nome-topping" data-texto="Mel">Mel</span>
@@ -126,7 +162,7 @@
         <label class="topping-label">
           <input type="checkbox" name="topping" value="Manteiga Amendoim" data-dose="0" onchange="limparDose(this)">
           <div class="topping-card">
-            <img src="manteiga.png" alt="Manteiga Amendoim">
+            <img src="manteiga.png" alt="Manteiga Amendoim" onerror="this.style.display='none'">
             <div class="controlo-dose">
               <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
               <span class="nome-topping" data-texto="Manteiga A.">Manteiga A.</span>
@@ -137,7 +173,7 @@
         <label class="topping-label">
           <input type="checkbox" name="topping" value="Chocolate" data-dose="0" onchange="limparDose(this)">
           <div class="topping-card">
-            <img src="chocolate.png" alt="Chocolate">
+            <img src="chocolate.png" alt="Chocolate" onerror="this.style.display='none'">
             <div class="controlo-dose">
               <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
               <span class="nome-topping" data-texto="Chocolate">Chocolate</span>
@@ -152,7 +188,7 @@
         <label class="topping-label">
           <input type="checkbox" name="topping" value="Granola" data-dose="0" onchange="limparDose(this)">
           <div class="topping-card">
-            <img src="granola.png" alt="Granola">
+            <img src="granola.png" alt="Granola" onerror="this.style.display='none'">
             <div class="controlo-dose">
               <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
               <span class="nome-topping" data-texto="Granola">Granola</span>
@@ -163,7 +199,7 @@
         <label class="topping-label">
           <input type="checkbox" name="topping" value="Oreo" data-dose="0" onchange="limparDose(this)">
           <div class="topping-card">
-            <img src="oreo.png" alt="Oreo">
+            <img src="oreo.png" alt="Oreo" onerror="this.style.display='none'">
             <div class="controlo-dose">
               <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
               <span class="nome-topping" data-texto="Oreo">Oreo</span>
@@ -174,7 +210,7 @@
         <label class="topping-label">
           <input type="checkbox" name="topping" value="Paçoca" data-dose="0" onchange="limparDose(this)">
           <div class="topping-card">
-            <img src="pacoca.png" alt="Paçoca">
+            <img src="pacoca.png" alt="Paçoca" onerror="this.style.display='none'">
             <div class="controlo-dose">
               <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
               <span class="nome-topping" data-texto="Paçoca">Paçoca</span>
@@ -185,7 +221,7 @@
         <label class="topping-label">
           <input type="checkbox" name="topping" value="Leite em Po" data-dose="0" onchange="limparDose(this)">
           <div class="topping-card">
-            <img src="leitep.png" alt="Leite em Pó">
+            <img src="leitep.png" alt="Leite em Pó" onerror="this.style.display='none'">
             <div class="controlo-dose">
               <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
               <span class="nome-topping" data-texto="Leite em Pó">Leite em Pó</span>
@@ -200,7 +236,7 @@
         <label class="topping-label">
           <input type="checkbox" name="topping" value="Banana" data-dose="0" onchange="limparDose(this)">
           <div class="topping-card">
-            <img src="banana.png" alt="Banana">
+            <img src="banana.png" alt="Banana" onerror="this.style.display='none'">
             <div class="controlo-dose">
               <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
               <span class="nome-topping" data-texto="Banana">Banana</span>
@@ -211,7 +247,7 @@
         <label class="topping-label">
           <input type="checkbox" name="topping" value="Morango" data-dose="0" onchange="limparDose(this)">
           <div class="topping-card">
-            <img src="morango.png" alt="Morango">
+            <img src="morango.png" alt="Morango" onerror="this.style.display='none'">
             <div class="controlo-dose">
               <span class="btn-dose" onclick="alterarDose(event, this, -1)">-</span>
               <span class="nome-topping" data-texto="Morango">Morango</span>
@@ -224,7 +260,7 @@
 
     <button class="btn-adicionar" onclick="adicionarAoCarrinho()">Adicionar ao Pedido</button>
     <button id="btn-duplicar" class="btn-secundario" style="display: none;" onclick="copiarUltimoCopo()">Copiar Último Copo</button>
-    
+
     <div class="resumo-rodape">
       <span class="contador-carrinho" id="texto-contador">0 copos no pedido</span>
     </div>
@@ -232,31 +268,28 @@
     <button onclick="irParaRevisao()">Avançar para Revisão</button>
   </div>
 
+  <!-- REVISÃO -->
   <div id="ecran-revisao">
     <div class="seccao">
       <button class="btn-secundario" onclick="voltarAoPedido()">Voltar ao Pedido</button>
     </div>
-
     <div class="seccao">
       <h3>Revisão de Pedido e Nomes</h3>
       <p>Confere os copos e escreve o nome do cliente em cada um.</p>
     </div>
-
     <div id="lista-revisao"></div>
-
     <div class="seccao">
       <h3>Pré-visualização das Etiquetas</h3>
       <div id="ticket-preview" style="display: flex; flex-direction: column; align-items: center;"></div>
     </div>
-
     <button onclick="irParaPagamento()">Avançar para Pagamento</button>
   </div>
 
+  <!-- PAGAMENTO -->
   <div id="ecran-pagamento">
     <div class="seccao">
       <button class="btn-secundario" onclick="voltarARevisao()">Voltar à Revisão</button>
     </div>
-
     <div class="seccao">
       <h3>Tipo de Pagamento</h3>
       <label><input type="radio" name="tipo_conta" value="unica" checked onchange="atualizarInterfacePagamento()"> Conta Única (Um pagamento para tudo)</label>
@@ -267,6 +300,7 @@
       <div class="bloco-pagamento">
         <div class="titulo-pagamento">Pagamento Total</div>
         <div class="valor-destaque" id="valor-total-global">0.00 €</div>
+        <label><input type="radio" name="pag_global" value="Pagar Depois" onchange="verificarDinheiroGlobal(this.value)"> Pagar Depois</label>
         <label><input type="radio" name="pag_global" value="MBWay" onchange="verificarDinheiroGlobal(this.value)"> MBWay</label>
         <label><input type="radio" name="pag_global" value="Dinheiro" onchange="verificarDinheiroGlobal(this.value)"> Dinheiro</label>
         <label><input type="radio" name="pag_global" value="SumUp" onchange="verificarDinheiroGlobal(this.value)"> SumUp</label>
@@ -279,23 +313,57 @@
     </div>
 
     <div id="area-pagamento-separado" style="display: none;"></div>
+    <div id="area-impressao-secreta" style="display: none;"></div>
 
     <button onclick="registarVenda()">Imprimir Tickets e Gravar Venda</button>
   </div>
 </div>
 
+<!-- HISTÓRICO -->
+<div id="ecran-historico">
+  <div class="seccao">
+    <button class="btn-secundario" onclick="voltarAoMenu()">Voltar ao Menu</button>
+  </div>
+  <div class="seccao">
+    <h3>Pedidos Pendentes</h3>
+    <p>Aqui podes atualizar os métodos de pagamento dos copos registados recentemente que ainda não foram pagos.</p>
+  </div>
+  <div id="lista-historico"></div>
+</div>
+
 <script>
-  const urlScript = "https://script.google.com/macros/s/AKfycbydfxS5wia2mq_BihJkp3uIm-wWh0KN1V865tDyh3AOL274z8WmhX6RrfQttfEbRbgtqA/exec";
+  const urlScript = "https://script.google.com/macros/s/AKfycbyHLcT2wppAWipDrhi3y2f0xOHNOsMsNWa3OMzCA79R1uNA_j2tAeBMOmc5yDQB3krcSA/exec";
   let funcionarioLogado = "";
   let carrinho = [];
 
-  // === BLUETOOTH ===
+  // ============================================================
+  //  BLUETOOTH — variáveis de estado
+  // ============================================================
   let dispositivoBT = null;
   let caracteristicaBT = null;
 
   // UUIDs padrão ESC/POS BLE (compatível com a maioria das impressoras térmicas)
-  const BT_SERVICE_UUID       = "000018f0-0000-1000-8000-00805f9b34fb";
+  const BT_SERVICE_UUID        = "000018f0-0000-1000-8000-00805f9b34fb";
   const BT_CHARACTERISTIC_UUID = "00002af1-0000-1000-8000-00805f9b34fb";
+
+  // Atualiza TODOS os indicadores de estado BT presentes na página
+  function atualizarEstadoBT(estado, texto) {
+    ["estado-bluetooth-menu", "estado-bluetooth-vendas"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.className = "estado-bt " + estado;
+        el.innerText = texto;
+      }
+    });
+  }
+
+  // Atualiza TODOS os textos de aviso BT presentes na página
+  function atualizarAvisoBT(texto) {
+    ["aviso-bluetooth-menu", "aviso-bluetooth-vendas"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerText = texto;
+    });
+  }
 
   async function ligarImpressora() {
     if (!navigator.bluetooth) {
@@ -304,16 +372,15 @@
     }
 
     atualizarEstadoBT("aguardar", "🟡 A ligar...");
-    document.getElementById("aviso-bluetooth").innerText = "A procurar impressoras Bluetooth...";
+    atualizarAvisoBT("A procurar impressoras Bluetooth...");
 
     try {
-      // Tenta o UUID padrão primeiro; se a tua impressora tiver outro UUID, adiciona-o abaixo
       dispositivoBT = await navigator.bluetooth.requestDevice({
         filters: [{ services: [BT_SERVICE_UUID] }],
         optionalServices: [BT_SERVICE_UUID]
       });
     } catch (e) {
-      // Se o UUID não for encontrado, faz scan genérico
+      // Se o UUID filtrado não for encontrado, faz scan genérico
       try {
         dispositivoBT = await navigator.bluetooth.requestDevice({
           acceptAllDevices: true,
@@ -321,41 +388,37 @@
         });
       } catch (e2) {
         atualizarEstadoBT("desligado", "⚫ Desligada");
-        document.getElementById("aviso-bluetooth").innerText = "Ligação cancelada ou falhou. Tenta novamente.";
+        atualizarAvisoBT("Ligação cancelada ou falhou. Tenta novamente.");
         return;
       }
     }
 
     try {
-      document.getElementById("aviso-bluetooth").innerText = "A estabelecer ligação com " + dispositivoBT.name + "...";
+      atualizarAvisoBT("A estabelecer ligação com " + dispositivoBT.name + "...");
       const server = await dispositivoBT.gatt.connect();
       const service = await server.getPrimaryService(BT_SERVICE_UUID);
       caracteristicaBT = await service.getCharacteristic(BT_CHARACTERISTIC_UUID);
 
       atualizarEstadoBT("ligado", "🟢 Ligada: " + dispositivoBT.name);
-      document.getElementById("aviso-bluetooth").innerText = "Impressora ligada com sucesso! Podes agora imprimir os tickets.";
+      atualizarAvisoBT("Impressora ligada com sucesso! Os tickets serão impressos ao gravar a venda.");
 
       dispositivoBT.addEventListener('gattserverdisconnected', () => {
-        atualizarEstadoBT("desligado", "⚫ Desligada");
         caracteristicaBT = null;
-        document.getElementById("aviso-bluetooth").innerText = "Impressora desligada. Prime 'Ligar Impressora' para reconectar.";
+        atualizarEstadoBT("desligado", "⚫ Desligada");
+        atualizarAvisoBT("Impressora desligada. Prime 'Ligar Impressora' para reconectar.");
       });
 
     } catch (err) {
       atualizarEstadoBT("desligado", "⚫ Erro na ligação");
-      document.getElementById("aviso-bluetooth").innerText = "Não foi possível ligar. Verifica se a impressora está ligada e com Bluetooth ativo.\nErro: " + err.message;
+      atualizarAvisoBT("Não foi possível ligar. Verifica se a impressora está ligada e com Bluetooth ativo.\nErro: " + err.message);
       console.error("Erro BT:", err);
     }
   }
 
-  function atualizarEstadoBT(estado, texto) {
-    const el = document.getElementById("estado-bluetooth");
-    el.className = "estado-bt " + estado;
-    el.innerText = texto;
-  }
-
-  // === ESC/POS: construtor de comandos ===
-  function criarEscPos(copo) {
+  // ============================================================
+  //  ESC/POS — construtor de comandos para impressão térmica
+  // ============================================================
+  function criarEscPos(copo, numeroPedido) {
     const ESC = 0x1B;
     const GS  = 0x1D;
     const LF  = 0x0A;
@@ -363,10 +426,9 @@
     const abreviaturas = {
       "Leite Condensado": "Leite Cond.",
       "Manteiga Amendoim": "Mant. Amend.",
-      "Leite em Po": "Leite em Po"
+      "Leite em Po":       "Leite em Po"
     };
 
-    // Converte texto para bytes (latin1 — compatível com a maioria das térmicas)
     function textBytes(str) {
       const bytes = [];
       for (let i = 0; i < str.length; i++) {
@@ -375,29 +437,24 @@
       return bytes;
     }
 
-    function linha(texto) {
-      return [...textBytes(texto), LF];
-    }
-
-    function separador() {
-      return linha("--------------------------------");
-    }
+    function linha(texto) { return [...textBytes(texto), LF]; }
+    function separador()  { return linha("--------------------------------"); }
 
     const nomeCliente = copo.cliente || "CLIENTE";
-    const tamanho = copo.artigo.replace("Acai ", "").toUpperCase();
+    const tamanho     = copo.artigo.replace("Acai ", "").toUpperCase();
+    const numStr      = numeroPedido ? "#" + numeroPedido : "";
 
     let bytes = [];
 
-    // Init
-    bytes.push(ESC, 0x40); // Reset
+    // Init / reset
+    bytes.push(ESC, 0x40);
 
     // Centralizar
     bytes.push(ESC, 0x61, 0x01);
 
     // Negrito ON + tamanho duplo
     bytes.push(ESC, 0x45, 0x01);
-    bytes.push(GS, 0x21, 0x11); // largura x2, altura x2
-
+    bytes.push(GS,  0x21, 0x11);
     bytes.push(...linha("OBRIGADO"));
     bytes.push(...linha(nomeCliente));
 
@@ -405,21 +462,20 @@
     bytes.push(GS, 0x21, 0x00);
     bytes.push(...separador());
 
-    // Tamanho do açaí
-    bytes.push(GS, 0x21, 0x01); // altura x2
-    bytes.push(...linha(tamanho));
+    // Número do pedido + tamanho
+    bytes.push(GS, 0x21, 0x01);
+    bytes.push(...linha(numStr + "  " + tamanho));
     bytes.push(GS, 0x21, 0x00);
-
     bytes.push(...separador());
 
     // Toppings — alinhar à esquerda
     bytes.push(ESC, 0x61, 0x00);
-    bytes.push(ESC, 0x45, 0x00); // negrito OFF
+    bytes.push(ESC, 0x45, 0x00);
 
     if (copo.toppingsRaw && copo.toppingsRaw.length > 0) {
       for (let i = 0; i < copo.toppingsRaw.length; i++) {
-        const tr = copo.toppingsRaw[i];
-        const nome = abreviaturas[tr.nome] ? abreviaturas[tr.nome] : tr.nome;
+        const tr    = copo.toppingsRaw[i];
+        const nome  = abreviaturas[tr.nome] ? abreviaturas[tr.nome] : tr.nome;
         let prefixo = "  ";
         if (tr.dose === 1)  prefixo = "+ ";
         if (tr.dose === -1) prefixo = "- ";
@@ -429,82 +485,77 @@
       bytes.push(...linha("  SEM TOPPINGS"));
     }
 
-    // Espaço final e corte de papel
+    // Instagram
+    bytes.push(ESC, 0x61, 0x01);
+    bytes.push(...separador());
+    bytes.push(...linha("@tikiberryacai"));
+
+    // Espaço final + corte de papel
     bytes.push(LF, LF, LF);
-    bytes.push(GS, 0x56, 0x00); // corte total (se a impressora suportar)
+    bytes.push(GS, 0x56, 0x00);
 
     return new Uint8Array(bytes);
   }
 
   // Envia dados em chunks (máx 20 bytes por pacote BLE)
   async function enviarParaImpressora(dados) {
-    if (!caracteristicaBT) {
-      alert("Impressora não ligada! Liga a impressora primeiro.");
-      return false;
-    }
-
+    if (!caracteristicaBT) return false;
     const CHUNK = 20;
     for (let i = 0; i < dados.length; i += CHUNK) {
       const parte = dados.slice(i, i + CHUNK);
       await caracteristicaBT.writeValue(parte);
-      await new Promise(r => setTimeout(r, 30)); // pequena pausa entre chunks
+      await new Promise(r => setTimeout(r, 30));
     }
     return true;
   }
-
-  async function imprimirTodosOsTickets() {
-    if (!caracteristicaBT) {
-      alert("Impressora não ligada! Liga a impressora antes de imprimir.");
-      return;
-    }
-
-    for (let i = 0; i < carrinho.length; i++) {
-      const dados = criarEscPos(carrinho[i]);
-      const ok = await enviarParaImpressora(dados);
-      if (!ok) break;
-      await new Promise(r => setTimeout(r, 500)); // pausa entre tickets
-    }
-
-    alert("Todos os tickets foram enviados para impressão!");
-  }
-  // === FIM BLUETOOTH ===
+  // ============================================================
+  //  FIM BLUETOOTH
+  // ============================================================
 
   const precosTamanhos = {
     "Acai Pequeno": 6.00,
-    "Acai Medio": 7.50,
-    "Acai Grande": 9.50
+    "Acai Medio":   8.00,
+    "Acai Grande":  9.50
   };
 
   const utilizadoresValidos = {
     "eryk": "1234",
-    "funcionario1": "5678"
+    "hugo": "1234"
   };
 
   window.onload = function() {
     verificarSessao();
   };
 
+  // ---- Navegação ----
+
+  function esconderTudo() {
+    ["ecran-login","ecran-menu","ecran-app","ecran-pedido","ecran-revisao",
+     "ecran-pagamento","ecran-historico","ecran-impressora"].forEach(id => {
+      document.getElementById(id).style.display = "none";
+    });
+  }
+
   function verificarSessao() {
     const sessaoGuardada = localStorage.getItem('funcionarioLogado');
     if (sessaoGuardada) {
       funcionarioLogado = sessaoGuardada;
-      document.getElementById("nome-operador").innerText = funcionarioLogado;
-      document.getElementById("ecran-login").style.display = "none";
-      document.getElementById("ecran-app").style.display = "block";
-      document.getElementById("ecran-pedido").style.display = "block";
+      mostrarMenu();
+    } else {
+      esconderTudo();
+      document.getElementById("ecran-login").style.display = "block";
     }
   }
 
   function fazerLogin() {
-    const user = document.getElementById("usuario").value;
+    const user = document.getElementById("usuario").value.toLowerCase();
     const pass = document.getElementById("palavra-passe").value;
     if (utilizadoresValidos[user] && utilizadoresValidos[user] === pass) {
       funcionarioLogado = user;
       localStorage.setItem('funcionarioLogado', user);
-      document.getElementById("nome-operador").innerText = user;
-      document.getElementById("ecran-login").style.display = "none";
-      document.getElementById("ecran-app").style.display = "block";
-      document.getElementById("ecran-pedido").style.display = "block";
+      document.getElementById("usuario").value = "";
+      document.getElementById("palavra-passe").value = "";
+      mostrarMenu();
     } else {
       alert("Utilizador ou palavra-passe incorretos.");
     }
@@ -514,31 +565,69 @@
     localStorage.removeItem('funcionarioLogado');
     funcionarioLogado = "";
     carrinho = [];
-    atualizarContador();
-    document.getElementById("ecran-app").style.display = "none";
-    document.getElementById("ecran-pedido").style.display = "none";
-    document.getElementById("ecran-revisao").style.display = "none";
-    document.getElementById("ecran-pagamento").style.display = "none";
-    document.getElementById("ecran-login").style.display = "block";
-    document.getElementById("usuario").value = "";
-    document.getElementById("palavra-passe").value = "";
+    verificarSessao();
   }
+
+  function mostrarMenu() {
+    esconderTudo();
+    document.getElementById("ecran-menu").style.display = "block";
+    document.getElementById("nome-operador-menu").innerText = funcionarioLogado.toUpperCase();
+  }
+
+  function voltarAoMenu() { mostrarMenu(); }
+
+  function abrirVendas() {
+    esconderTudo();
+    document.getElementById("ecran-app").style.display = "block";
+    document.getElementById("ecran-pedido").style.display = "block";
+    if (carrinho.length === 0) {
+      limparFormularioPedido();
+      atualizarContador();
+    }
+  }
+
+  function abrirConfiguracaoImpressora() {
+    esconderTudo();
+    document.getElementById("ecran-impressora").style.display = "block";
+  }
+
+  // ---- Numeração de pedidos ----
+
+  function obterNumeroPedidoAtual() {
+    let num = localStorage.getItem('numeroPedidoLoja');
+    if (!num) { num = 0; localStorage.setItem('numeroPedidoLoja', num); }
+    return parseInt(num);
+  }
+
+  function avancarNumeroPedido() {
+    let num = obterNumeroPedidoAtual();
+    num = (num >= 999) ? 0 : num + 1;
+    localStorage.setItem('numeroPedidoLoja', num);
+  }
+
+  function gerarIdPedidoUnico() {
+    const num     = obterNumeroPedidoAtual().toString().padStart(3, '0');
+    const inicial = funcionarioLogado ? funcionarioLogado.charAt(0).toUpperCase() : 'X';
+    return inicial + num;
+  }
+
+  // ---- Toppings / dose ----
 
   function alterarDose(evento, elemento, direcao) {
     evento.preventDefault();
     evento.stopPropagation();
-    const cartao = elemento.closest('.topping-label');
-    const checkbox = cartao.querySelector('input[type="checkbox"]');
-    const textoLabel = cartao.querySelector('.nome-topping');
+    const cartao       = elemento.closest('.topping-label');
+    const checkbox     = cartao.querySelector('input[type="checkbox"]');
+    const textoLabel   = cartao.querySelector('.nome-topping');
     const textoOriginal = textoLabel.getAttribute('data-texto');
     let dose = parseInt(checkbox.getAttribute('data-dose')) || 0;
-    if (direcao === 1) { dose = dose < 1 ? dose + 1 : 1; }
-    else { dose = dose > -1 ? dose - 1 : -1; }
+    if (direcao === 1)  { dose = dose < 1  ? dose + 1 : 1;  }
+    else                { dose = dose > -1 ? dose - 1 : -1; }
     checkbox.setAttribute('data-dose', dose);
     if (!checkbox.checked) checkbox.checked = true;
-    if (dose === 1) textoLabel.innerText = "Mais " + textoOriginal;
+    if (dose === 1)       textoLabel.innerText = "Mais " + textoOriginal;
     else if (dose === -1) textoLabel.innerText = "Menos " + textoOriginal;
-    else textoLabel.innerText = textoOriginal;
+    else                  textoLabel.innerText = textoOriginal;
   }
 
   function limparDose(checkbox) {
@@ -549,34 +638,32 @@
     }
   }
 
+  // ---- Carrinho ----
+
   function adicionarAoCarrinho() {
     const artigoSelecionado = document.querySelector('input[name="artigo"]:checked');
-    if (!artigoSelecionado) {
-      alert("Por favor, escolhe primeiro o tamanho do açaí.");
-      return;
-    }
+    if (!artigoSelecionado) { alert("Por favor, escolhe primeiro o tamanho do açaí."); return; }
     const artigo = artigoSelecionado.value;
-    const preco = precosTamanhos[artigo] || 0;
+    const preco  = precosTamanhos[artigo] || 0;
     const checkboxes = document.querySelectorAll('input[name="topping"]:checked');
     let listaToppingsTexto = [];
-    let listaToppingsRaw = [];
+    let listaToppingsRaw   = [];
     for (let i = 0; i < checkboxes.length; i++) {
       const dose = parseInt(checkboxes[i].getAttribute('data-dose')) || 0;
       const nome = checkboxes[i].value;
-      listaToppingsRaw.push({nome: nome, dose: dose});
-      if (dose === 1) listaToppingsTexto.push("Mais " + nome);
+      listaToppingsRaw.push({ nome, dose });
+      if (dose === 1)       listaToppingsTexto.push("Mais " + nome);
       else if (dose === -1) listaToppingsTexto.push("Menos " + nome);
-      else listaToppingsTexto.push(nome);
+      else                  listaToppingsTexto.push(nome);
     }
-    const novoCopo = {
+    carrinho.push({
       id: Date.now() + Math.random(),
-      artigo: artigo,
-      preco: preco,
+      artigo,
+      preco,
       cliente: "",
       toppingsTexto: listaToppingsTexto.join(", "),
       toppingsRaw: listaToppingsRaw
-    };
-    carrinho.push(novoCopo);
+    });
     atualizarContador();
     limparFormularioPedido();
   }
@@ -586,19 +673,19 @@
     limparFormularioPedido();
     const ultimoCopo = carrinho[carrinho.length - 1];
     const radioArtigo = document.querySelector(`input[name="artigo"][value="${ultimoCopo.artigo}"]`);
-    if(radioArtigo) radioArtigo.checked = true;
+    if (radioArtigo) radioArtigo.checked = true;
     if (ultimoCopo.toppingsRaw) {
       for (let i = 0; i < ultimoCopo.toppingsRaw.length; i++) {
-        const toppingRaw = ultimoCopo.toppingsRaw[i];
-        const checkbox = document.querySelector(`input[name="topping"][value="${toppingRaw.nome}"]`);
+        const tr = ultimoCopo.toppingsRaw[i];
+        const checkbox = document.querySelector(`input[name="topping"][value="${tr.nome}"]`);
         if (checkbox) {
           checkbox.checked = true;
-          checkbox.setAttribute('data-dose', toppingRaw.dose);
-          const textoLabel = checkbox.closest('.topping-label').querySelector('.nome-topping');
+          checkbox.setAttribute('data-dose', tr.dose);
+          const textoLabel    = checkbox.closest('.topping-label').querySelector('.nome-topping');
           const textoOriginal = textoLabel.getAttribute('data-texto');
-          if (toppingRaw.dose === 1) textoLabel.innerText = "Mais " + textoOriginal;
-          else if (toppingRaw.dose === -1) textoLabel.innerText = "Menos " + textoOriginal;
-          else textoLabel.innerText = textoOriginal;
+          if (tr.dose === 1)       textoLabel.innerText = "Mais " + textoOriginal;
+          else if (tr.dose === -1) textoLabel.innerText = "Menos " + textoOriginal;
+          else                     textoLabel.innerText = textoOriginal;
         }
       }
     }
@@ -612,7 +699,7 @@
 
   function limparFormularioPedido() {
     const artigoSelecionado = document.querySelector('input[name="artigo"]:checked');
-    if(artigoSelecionado) artigoSelecionado.checked = false;
+    if (artigoSelecionado) artigoSelecionado.checked = false;
     const checkboxes = document.querySelectorAll('input[name="topping"]:checked');
     for (let i = 0; i < checkboxes.length; i++) {
       checkboxes[i].checked = false;
@@ -620,11 +707,10 @@
     }
   }
 
+  // ---- Revisão ----
+
   function irParaRevisao() {
-    if (carrinho.length === 0) {
-      alert("Não tens nenhum copo no pedido. Adiciona pelo menos um para avançar.");
-      return;
-    }
+    if (carrinho.length === 0) { alert("Não tens nenhum copo no pedido. Adiciona pelo menos um para avançar."); return; }
     document.getElementById("ecran-pedido").style.display = "none";
     document.getElementById("ecran-revisao").style.display = "block";
     atualizarInterfaceRevisao();
@@ -655,7 +741,7 @@
     const listaContainer = document.getElementById("lista-revisao");
     let htmlLista = "";
     for (let i = 0; i < carrinho.length; i++) {
-      const copo = carrinho[i];
+      const copo      = carrinho[i];
       const nomeValue = copo.cliente || "";
       htmlLista += `
         <div class="item-carrinho">
@@ -664,54 +750,70 @@
             <button class="btn-remover" onclick="removerDoCarrinho(${i})">-</button>
           </div>
           <div class="item-toppings">${copo.toppingsTexto || "Sem toppings"}</div>
-          <input type="text" id="nome-cliente-${i}" placeholder="NOME PARA ESTE COPO" value="${nomeValue}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase(); atualizarNomeCopo(${i}, this.value); atualizarTicket()">
+          <input type="text" id="nome-cliente-${i}" placeholder="NOME PARA ESTE COPO" value="${nomeValue}"
+            style="text-transform: uppercase;"
+            oninput="this.value = this.value.toUpperCase(); atualizarNomeCopo(${i}, this.value); atualizarPreviewTickets()">
         </div>
       `;
     }
     listaContainer.innerHTML = htmlLista;
-    atualizarTicket();
+    atualizarPreviewTickets();
   }
 
-  function atualizarTicket() {
-    let previewContainer = document.getElementById("ticket-preview");
-    previewContainer.innerHTML = "";
+  // ---- Tickets HTML (pré-visualização) ----
+
+  function gerarHtmlTicket(copo, numeroApresentacao, metodoPagamento) {
+    const nomeCliente    = copo.cliente ? copo.cliente : "A AGUARDAR...";
+    const tamanhoEtiqueta = copo.artigo.replace("Acai ", "").toUpperCase();
     const abreviaturas = {
       "Leite Condensado": "Leite Con.",
-      "Chocolate": "Choco",
-      "Manteiga Amendoim": "Mant. Am.",
-      "Leite em Po": "Leite Po"
+      "Chocolate":        "Choco",
+      "Manteiga Amendoim":"Mant. Am.",
+      "Leite em Po":      "Leite Po"
     };
-    for (let i = 0; i < carrinho.length; i++) {
-      const copo = carrinho[i];
-      const nomeCliente = copo.cliente ? copo.cliente : "A AGUARDAR...";
-      const tamanhoEtiqueta = copo.artigo.replace("Acai ", "").toUpperCase();
-      let toppingsTicketHTML = "";
-      if (copo.toppingsRaw && copo.toppingsRaw.length > 0) {
-        for (let j = 0; j < copo.toppingsRaw.length; j++) {
-          const tr = copo.toppingsRaw[j];
-          const nomeEtiqueta = abreviaturas[tr.nome] ? abreviaturas[tr.nome] : tr.nome;
-          if (tr.dose === 1) toppingsTicketHTML += "<div>+ " + nomeEtiqueta + "</div>";
-          else if (tr.dose === -1) toppingsTicketHTML += "<div>- " + nomeEtiqueta + "</div>";
-          else toppingsTicketHTML += "<div>" + nomeEtiqueta + "</div>";
-        }
-      } else {
-        toppingsTicketHTML = "<div style='grid-column: span 2; text-align: center;'>SEM TOPPINGS</div>";
+    let toppingsTicketHTML = "";
+    if (copo.toppingsRaw && copo.toppingsRaw.length > 0) {
+      for (let j = 0; j < copo.toppingsRaw.length; j++) {
+        const tr          = copo.toppingsRaw[j];
+        const nomeEtiqueta = abreviaturas[tr.nome] ? abreviaturas[tr.nome] : tr.nome;
+        if (tr.dose === 1)       toppingsTicketHTML += "<div>+ " + nomeEtiqueta + "</div>";
+        else if (tr.dose === -1) toppingsTicketHTML += "<div>- " + nomeEtiqueta + "</div>";
+        else                     toppingsTicketHTML += "<div>" + nomeEtiqueta + "</div>";
       }
-      previewContainer.innerHTML += `
-        <div class="ticket-etiqueta">
-          <div class="ticket-obrigado">OBRIGADO ${nomeCliente}</div>
-          <div class="ticket-separador">- - - - - - - - - - - - - -</div>
-          <div class="linha-tamanho">
-            <img src="logo.png" class="logo-ticket">
-            <div class="ticket-tamanho">${tamanhoEtiqueta}</div>
-            <img src="logo.png" class="logo-ticket">
-          </div>
-          <div class="ticket-separador">- - - - - - - - - - - - - -</div>
-          <div class="ticket-toppings">${toppingsTicketHTML}</div>
+    } else {
+      toppingsTicketHTML = "<div style='grid-column: span 2; text-align: center;'>SEM TOPPINGS</div>";
+    }
+    let marcaPago = "";
+    if (metodoPagamento && metodoPagamento !== "Pagar Depois") {
+      marcaPago = '<div class="ticket-pago-marca">P</div>';
+    }
+    return `
+      <div class="ticket-etiqueta">
+        ${marcaPago}
+        <div class="ticket-obrigado">OBRIGADO ${nomeCliente}</div>
+        <div class="ticket-separador">- - - - - - - - - - - - - -</div>
+        <div class="linha-tamanho">
+          <div class="numero-pedido">#${numeroApresentacao}</div>
+          <div class="ticket-tamanho">${tamanhoEtiqueta}</div>
+          <div class="numero-pedido">#${numeroApresentacao}</div>
         </div>
-      `;
+        <div class="ticket-separador" style="margin-bottom: 0;">- - - - - - - - - - - - - -</div>
+        <div class="ticket-toppings">${toppingsTicketHTML}</div>
+        <div class="ticket-insta">@tikiberryacai</div>
+      </div>
+    `;
+  }
+
+  function atualizarPreviewTickets() {
+    const previewContainer = document.getElementById("ticket-preview");
+    previewContainer.innerHTML = "";
+    const numeroStr = gerarIdPedidoUnico();
+    for (let i = 0; i < carrinho.length; i++) {
+      previewContainer.innerHTML += gerarHtmlTicket(carrinho[i], numeroStr, null);
     }
   }
+
+  // ---- Pagamento ----
 
   function irParaPagamento() {
     for (let i = 0; i < carrinho.length; i++) {
@@ -726,22 +828,22 @@
   }
 
   function atualizarInterfacePagamento() {
-    const tipoConta = document.querySelector('input[name="tipo_conta"]:checked').value;
-    const areaGlobal = document.getElementById("area-pagamento-global");
+    const tipoConta   = document.querySelector('input[name="tipo_conta"]:checked').value;
+    const areaGlobal  = document.getElementById("area-pagamento-global");
     const areaSeparada = document.getElementById("area-pagamento-separado");
     let totalGlobal = 0;
     carrinho.forEach(copo => totalGlobal += copo.preco);
     if (tipoConta === "unica") {
       areaSeparada.style.display = "none";
-      areaGlobal.style.display = "block";
+      areaGlobal.style.display   = "block";
       document.getElementById("valor-total-global").innerText = totalGlobal.toFixed(2) + " €";
       document.getElementById("recebido-global").value = "";
       document.getElementById("troco-global").innerText = "Troco: 0.00 €";
       document.querySelectorAll('input[name="pag_global"]').forEach(r => r.checked = false);
       document.getElementById("calculadora-global").style.display = "none";
     } else {
-      areaGlobal.style.display = "none";
-      areaSeparada.style.display = "block";
+      areaGlobal.style.display    = "none";
+      areaSeparada.style.display  = "block";
       let htmlSeparado = "";
       for (let i = 0; i < carrinho.length; i++) {
         const copo = carrinho[i];
@@ -749,9 +851,12 @@
           <div class="bloco-pagamento">
             <div class="titulo-pagamento">Copo ${i + 1}: ${copo.cliente}</div>
             <div class="valor-destaque">${copo.preco.toFixed(2)} €</div>
-            <label style="font-size:14px;"><input type="radio" name="pag_item_${i}" value="MBWay" onchange="verificarDinheiroSeparado(${i}, this.value)"> MBWay</label>
-            <label style="font-size:14px;"><input type="radio" name="pag_item_${i}" value="Dinheiro" onchange="verificarDinheiroSeparado(${i}, this.value)"> Dinheiro</label>
-            <label style="font-size:14px;"><input type="radio" name="pag_item_${i}" value="SumUp" onchange="verificarDinheiroSeparado(${i}, this.value)"> SumUp</label>
+            <div style="margin-bottom: 10px;">
+              <label style="font-size: 14px;"><input type="radio" name="pag_item_${i}" value="Pagar Depois" onchange="verificarDinheiroSeparado(${i}, this.value)"> Pagar Depois</label>
+              <label style="font-size: 14px;"><input type="radio" name="pag_item_${i}" value="MBWay" onchange="verificarDinheiroSeparado(${i}, this.value)"> MBWay</label>
+              <label style="font-size: 14px;"><input type="radio" name="pag_item_${i}" value="Dinheiro" onchange="verificarDinheiroSeparado(${i}, this.value)"> Dinheiro</label>
+              <label style="font-size: 14px;"><input type="radio" name="pag_item_${i}" value="SumUp" onchange="verificarDinheiroSeparado(${i}, this.value)"> SumUp</label>
+            </div>
             <div id="calculadora-item-${i}" class="calculadora-troco">
               <label>Valor Entregue (€):</label>
               <input type="number" id="recebido-item-${i}" step="0.01" oninput="calcularTrocoSeparado(${i}, ${copo.preco})">
@@ -772,8 +877,7 @@
     let totalGlobal = 0;
     carrinho.forEach(copo => totalGlobal += copo.preco);
     const valorRecebido = parseFloat(document.getElementById("recebido-global").value) || 0;
-    let troco = valorRecebido - totalGlobal;
-    if (troco < 0) troco = 0;
+    let troco = Math.max(0, valorRecebido - totalGlobal);
     document.getElementById("troco-global").innerText = "Troco: " + troco.toFixed(2) + " €";
   }
 
@@ -783,71 +887,147 @@
 
   function calcularTrocoSeparado(index, preco) {
     const valorRecebido = parseFloat(document.getElementById(`recebido-item-${index}`).value) || 0;
-    let troco = valorRecebido - preco;
-    if (troco < 0) troco = 0;
+    let troco = Math.max(0, valorRecebido - preco);
     document.getElementById(`troco-item-${index}`).innerText = "Troco: " + troco.toFixed(2) + " €";
   }
 
+  // ---- Registar Venda ----
+
   async function registarVenda() {
     const tipoConta = document.querySelector('input[name="tipo_conta"]:checked').value;
-    let pagamentos = [];
+    let pagamentos  = [];
+
     if (tipoConta === "unica") {
       const pagamentoGlobal = document.querySelector('input[name="pag_global"]:checked');
-      if (!pagamentoGlobal) {
-        alert("Por favor, escolhe o método de pagamento para concluir a venda.");
-        return;
-      }
+      if (!pagamentoGlobal) { alert("Por favor, escolhe o método de pagamento para concluir a venda."); return; }
       for (let i = 0; i < carrinho.length; i++) pagamentos.push(pagamentoGlobal.value);
     } else {
       for (let i = 0; i < carrinho.length; i++) {
         const pagamentoItem = document.querySelector(`input[name="pag_item_${i}"]:checked`);
-        if (!pagamentoItem) {
-          alert(`Por favor, escolhe o método de pagamento para o Copo ${i + 1} de ${carrinho[i].cliente}.`);
-          return;
-        }
+        if (!pagamentoItem) { alert(`Por favor, escolhe o método de pagamento para o Copo ${i + 1} de ${carrinho[i].cliente}.`); return; }
         pagamentos.push(pagamentoItem.value);
       }
     }
 
-    // IMPRIMIR TICKETS VIA BLUETOOTH
+    const numPedidoStr = gerarIdPedidoUnico();
+
+    // --- IMPRESSÃO VIA BLUETOOTH ---
     if (caracteristicaBT) {
       for (let i = 0; i < carrinho.length; i++) {
-        const dados = criarEscPos(carrinho[i]);
+        const dados = criarEscPos(carrinho[i], numPedidoStr);
         await enviarParaImpressora(dados);
         await new Promise(r => setTimeout(r, 600));
       }
     } else {
-      const confirmar = confirm("Impressora não ligada. Queres gravar a venda sem imprimir?");
+      const confirmar = confirm("Impressora Bluetooth não ligada.\nQueres gravar a venda sem imprimir?");
       if (!confirmar) return;
     }
 
-    // GRAVAR VENDA
-    const agora = new Date();
+    // --- GRAVAR VENDA ---
+    const agora     = new Date();
     const dataVenda = agora.toLocaleDateString('pt-PT');
-    const horaVenda = agora.getHours().toString().padStart(2,'0') + ':' +
-                      agora.getMinutes().toString().padStart(2,'0') + ':' +
-                      agora.getSeconds().toString().padStart(2,'0');
+    const horaVenda = agora.getHours().toString().padStart(2, '0') + ':' +
+                      agora.getMinutes().toString().padStart(2, '0') + ':' +
+                      agora.getSeconds().toString().padStart(2, '0');
 
     for (let i = 0; i < carrinho.length; i++) {
+      const codigoUnicoGeral = "ID_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
       const dadosCopo = {
-        data: dataVenda,
-        hora: horaVenda,
-        artigo: carrinho[i].artigo,
-        toppings: carrinho[i].toppingsTexto,
-        pagamento: pagamentos[i],
-        cliente: carrinho[i].cliente,
-        funcionario: funcionarioLogado
+        acao:       "nova_venda",
+        pedido:     numPedidoStr,
+        data:       dataVenda,
+        hora:       horaVenda,
+        artigo:     carrinho[i].artigo,
+        toppings:   carrinho[i].toppingsTexto,
+        preco:      carrinho[i].preco,
+        pagamento:  pagamentos[i],
+        cliente:    carrinho[i].cliente,
+        funcionario: funcionarioLogado,
+        id_unico:   codigoUnicoGeral
       };
+
+      guardarVendaNoHistorico(dadosCopo);
+
       if (navigator.onLine) enviarParaExcel(dadosCopo);
-      else guardarLocalmente(dadosCopo);
+      else guardarFilaAtrasadas(dadosCopo);
     }
 
-    alert("Venda gravada" + (caracteristicaBT ? " e tickets impressos!" : " sem impressão."));
+    avancarNumeroPedido();
+
+    // Pré-visualização secreta (mantida por compatibilidade)
+    let impressaoSecreta = document.getElementById("area-impressao-secreta");
+    impressaoSecreta.innerHTML = "";
+    for (let i = 0; i < carrinho.length; i++) {
+      impressaoSecreta.innerHTML += gerarHtmlTicket(carrinho[i], numPedidoStr, pagamentos[i]);
+    }
+
+    alert("Pedido registado" + (caracteristicaBT ? " e tickets enviados para impressão!" : " sem impressão."));
     carrinho = [];
     atualizarContador();
-    document.getElementById("ecran-pagamento").style.display = "none";
+    esconderTudo();
+    document.getElementById("ecran-app").style.display    = "block";
     document.getElementById("ecran-pedido").style.display = "block";
   }
+
+  // ---- Histórico ----
+
+  function guardarVendaNoHistorico(dadosCopo) {
+    let hist = JSON.parse(localStorage.getItem('historicoVendas') || "[]");
+    hist.push(dadosCopo);
+    if (hist.length > 150) hist.shift();
+    localStorage.setItem('historicoVendas', JSON.stringify(hist));
+  }
+
+  function abrirHistorico() {
+    esconderTudo();
+    document.getElementById("ecran-historico").style.display = "block";
+    renderizarListaHistorico();
+  }
+
+  function renderizarListaHistorico() {
+    const contentor = document.getElementById("lista-historico");
+    let hist      = JSON.parse(localStorage.getItem('historicoVendas') || "[]");
+    let pendentes = hist.filter(v => v.pagamento === "Pagar Depois");
+    let html      = "";
+    if (pendentes.length === 0) {
+      html = "<p>Não existem copos pendentes de pagamento no momento.</p>";
+    } else {
+      for (let i = pendentes.length - 1; i >= 0; i--) {
+        const venda = pendentes[i];
+        html += `
+          <div class="historico-card">
+            <div style="font-weight: normal; font-size: 16px; margin-bottom: 5px; color: #333;">Pedido ${venda.pedido} - ${venda.cliente}</div>
+            <div style="font-size: 14px; color: #666; margin-bottom: 10px;">${venda.artigo} | Registado às ${venda.hora}</div>
+            <select class="select-pagamento" id="select-pagamento-${venda.id_unico}">
+              <option value="Pagar Depois" selected>Pagar Depois</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="MBWay">MBWay</option>
+              <option value="SumUp">SumUp</option>
+            </select>
+            <button class="btn-guardar-hist" onclick="guardarAlteracaoPagamento('${venda.id_unico}')">Guardar Alteração</button>
+          </div>
+        `;
+      }
+    }
+    contentor.innerHTML = html;
+  }
+
+  function guardarAlteracaoPagamento(idAlvo) {
+    const elementoSelect = document.getElementById('select-pagamento-' + idAlvo);
+    const novoMetodo     = elementoSelect.value;
+    if (novoMetodo === "Pagar Depois") { alert("Para guardar a alteração deves escolher um método de pagamento diferente."); return; }
+    let hist = JSON.parse(localStorage.getItem('historicoVendas') || "[]");
+    for (let i = 0; i < hist.length; i++) {
+      if (hist[i].id_unico === idAlvo) { hist[i].pagamento = novoMetodo; break; }
+    }
+    localStorage.setItem('historicoVendas', JSON.stringify(hist));
+    const dadosAtualizacao = { acao: "atualizar_pagamento", id_unico: idAlvo, pagamento: novoMetodo };
+    if (navigator.onLine) enviarParaExcel(dadosAtualizacao);
+    else guardarFilaAtrasadas(dadosAtualizacao);
+    renderizarListaHistorico();
+  }
+
+  // ---- Sincronização com Google Sheets ----
 
   function enviarParaExcel(dados) {
     fetch(urlScript, {
@@ -856,37 +1036,31 @@
       cache: "no-cache",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dados)
-    }).catch(() => guardarLocalmente(dados));
+    }).catch(() => guardarFilaAtrasadas(dados));
   }
 
-  function guardarLocalmente(dados) {
-    let vendasPendentes = localStorage.getItem('vendasAtrasadas');
-    vendasPendentes = vendasPendentes ? JSON.parse(vendasPendentes) : [];
-    vendasPendentes.push(dados);
-    localStorage.setItem('vendasAtrasadas', JSON.stringify(vendasPendentes));
+  function guardarFilaAtrasadas(dados) {
+    let fila = JSON.parse(localStorage.getItem('vendasAtrasadas') || "[]");
+    fila.push(dados);
+    localStorage.setItem('vendasAtrasadas', JSON.stringify(fila));
   }
 
   function sincronizarVendasAtrasadas() {
-    if (navigator.onLine) {
-      let vendasPendentes = localStorage.getItem('vendasAtrasadas');
-      if (vendasPendentes) {
-        vendasPendentes = JSON.parse(vendasPendentes);
-        if (vendasPendentes.length > 0) {
-          const vendaAtual = vendasPendentes[0];
-          fetch(urlScript, {
-            method: "POST",
-            mode: "no-cors",
-            cache: "no-cache",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(vendaAtual)
-          }).then(() => {
-            vendasPendentes.shift();
-            localStorage.setItem('vendasAtrasadas', JSON.stringify(vendasPendentes));
-            sincronizarVendasAtrasadas();
-          }).catch(() => {});
-        }
-      }
-    }
+    if (!navigator.onLine) return;
+    let fila = JSON.parse(localStorage.getItem('vendasAtrasadas') || "[]");
+    if (fila.length === 0) return;
+    const transacao = fila[0];
+    fetch(urlScript, {
+      method: "POST",
+      mode: "no-cors",
+      cache: "no-cache",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(transacao)
+    }).then(() => {
+      fila.shift();
+      localStorage.setItem('vendasAtrasadas', JSON.stringify(fila));
+      sincronizarVendasAtrasadas();
+    }).catch(() => {});
   }
 
   window.addEventListener('online', sincronizarVendasAtrasadas);

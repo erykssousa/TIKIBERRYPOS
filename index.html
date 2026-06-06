@@ -68,8 +68,8 @@
   .btn-bluetooth { background-color: #7b1fa2; margin-bottom: 8px; }
   .aviso-bluetooth { font-size: 13px; color: #555; background-color: #fff; border-radius: 6px; padding: 10px; margin-top: 8px; line-height: 1.4; }
 
-  .gerente-nav { display: flex; gap: 10px; margin-bottom: 20px; }
-  .gerente-nav button { padding: 10px; font-size: 14px; margin-bottom: 0; }
+  .gerente-nav { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .gerente-nav button { padding: 10px; font-size: 14px; margin-bottom: 0; flex: 1; min-width: 90px; }
   .grid-metricas { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
   .card-metrica { background: #f1f8e9; border: 1px solid #c5e1a5; border-radius: 8px; padding: 15px; text-align: center; }
   .card-metrica.destaque { background: #e3f2fd; border-color: #90caf9; grid-column: span 2; }
@@ -77,7 +77,7 @@
   .metrica-valor { font-size: 22px; color: #2e7d32; font-family: 'Quicksand', sans-serif; }
   .card-metrica.destaque .metrica-valor { font-size: 28px; color: #1565c0; }
   .linha-config { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
-  .linha-config input { width: 70px; margin-bottom: 0; padding: 5px; text-align: center; }
+  .linha-config input { width: 90px; margin-bottom: 0; padding: 5px; text-align: center; }
   .linha-config label { margin-bottom: 0; font-size: 14px; flex-grow: 1; }
 </style>
 </head>
@@ -107,6 +107,7 @@
   
   <div class="gerente-nav">
     <button id="btn-tab-dash" class="btn-menu" onclick="mostrarTabGerente('dash')">Dashboard</button>
+    <button id="btn-tab-tesouraria" class="btn-secundario" onclick="mostrarTabGerente('tesouraria')">Tesouraria</button>
     <button id="btn-tab-conf" class="btn-secundario" onclick="mostrarTabGerente('conf')">Custos</button>
   </div>
 
@@ -118,6 +119,7 @@
         <option value="3dias">Últimos 3 Dias</option>
         <option value="total" selected>Total</option>
       </select>
+      <div id="aviso-origem-dados" style="font-size: 13px; margin-top: 10px;">A aguardar ligação...</div>
     </div>
 
     <div class="grid-metricas">
@@ -156,6 +158,36 @@
       <div class="card-metrica destaque">
         <div class="metrica-titulo">Média de Toppings por Copo</div>
         <div class="metrica-valor" id="met-media-toppings">0.0</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-tesouraria-gerente" style="display: none;">
+    <div class="seccao">
+      <h3>Saldos Iniciais de Caixa e Bancos</h3>
+      <p style="font-size: 12px; color: #666;">Define o dinheiro que tens em cada local antes de contabilizar as vendas.</p>
+      <div class="linha-config"><label>Caixa (Dinheiro) Atual</label><input type="number" step="0.01" id="cfg-saldo-dinheiro"></div>
+      <div class="linha-config"><label>Conta MBWay Atual</label><input type="number" step="0.01" id="cfg-saldo-mbway"></div>
+      <div class="linha-config" style="border:none;"><label>Conta SumUp Atual</label><input type="number" step="0.01" id="cfg-saldo-sumup"></div>
+      <button class="btn-adicionar" onclick="guardarSaldosGerente()" style="margin-top: 15px;">Guardar Saldos Iniciais</button>
+    </div>
+
+    <div class="seccao">
+      <h3>Monitorização em Tempo Real</h3>
+      <p style="font-size: 12px; color: #666;">Estes valores somam o teu saldo inicial guardado com as vendas correspondentes ao filtro de tempo atual do Dashboard.</p>
+      <div class="grid-metricas">
+        <div class="card-metrica" style="grid-column: span 2;">
+          <div class="metrica-titulo">Dinheiro Físico Esperado</div>
+          <div class="metrica-valor" id="track-dinheiro" style="color: #f57c00; font-size: 28px;">0.00 €</div>
+        </div>
+        <div class="card-metrica">
+          <div class="metrica-titulo">MBWay Esperado</div>
+          <div class="metrica-valor" id="track-mbway" style="color: #1976d2;">0.00 €</div>
+        </div>
+        <div class="card-metrica">
+          <div class="metrica-titulo">SumUp Esperado</div>
+          <div class="metrica-valor" id="track-sumup" style="color: #388e3c;">0.00 €</div>
+        </div>
       </div>
     </div>
   </div>
@@ -388,7 +420,7 @@
 </div>
 
 <script>
-  const urlScript = "https://script.google.com/macros/s/AKfycbyHLcT2wppAWipDrhi3y2f0xOHNOsMsNWa3OMzCA79R1uNA_j2tAeBMOmc5yDQB3krcSA/exec";
+  const urlScript = "https://script.google.com/macros/s/AKfycbxMrBW_ytaw4xa2gtDCWF5SIGhRColT87cqxlQQLzImVkOiQO9cNxesBQyeu2EIB20i0A/exec";
   let funcionarioLogado = "";
   let carrinho = [];
   let dadosDashboard = [];
@@ -432,6 +464,12 @@
     });
   }
 
+  let configSaldos = JSON.parse(localStorage.getItem('configSaldos'));
+  if (!configSaldos) {
+    configSaldos = { Dinheiro: 0, MBWay: 0, SumUp: 0 };
+    localStorage.setItem('configSaldos', JSON.stringify(configSaldos));
+  }
+
   function atualizarEstadoBT(estado, texto) {
     ["estado-bluetooth-vendas"].forEach(id => {
       const el = document.getElementById(id);
@@ -451,7 +489,7 @@
 
   async function ligarImpressora() {
     if (!navigator.bluetooth) {
-      alert("O teu browser não suporta Web Bluetooth.\nUsa o Chrome no Android com a flag activada:\nchrome://flags → Experimental Web Platform features → Enabled");
+      alert("O teu browser não suporta Web Bluetooth.\nUsa o Chrome no Android com a flag ativada:\nchrome://flags → Experimental Web Platform features → Enabled");
       return;
     }
 
@@ -672,8 +710,11 @@
   async function mostrarTabGerente(tab) {
     document.getElementById("tab-dash-gerente").style.display = tab === 'dash' ? "block" : "none";
     document.getElementById("tab-conf-gerente").style.display = tab === 'conf' ? "block" : "none";
+    document.getElementById("tab-tesouraria-gerente").style.display = tab === 'tesouraria' ? "block" : "none";
+    
     document.getElementById("btn-tab-dash").className = tab === 'dash' ? "btn-menu" : "btn-secundario";
     document.getElementById("btn-tab-conf").className = tab === 'conf' ? "btn-menu" : "btn-secundario";
+    document.getElementById("btn-tab-tesouraria").className = tab === 'tesouraria' ? "btn-menu" : "btn-secundario";
     
     if (tab === 'dash') {
       document.getElementById("met-faturacao").innerText = "A carregar...";
@@ -681,12 +722,21 @@
         const resposta = await fetch(urlScript + "?acao=obter_vendas");
         const dadosFolha = await resposta.json();
         dadosDashboard = dadosFolha;
+        document.getElementById("aviso-origem-dados").innerText = "Dados atualizados da folha de cálculo";
+        document.getElementById("aviso-origem-dados").style.color = "#1b5e20";
       } catch (e) {
-        dadosDashboard = JSON.parse(localStorage.getItem('historicoVendas') || "[]");
+        dadosDashboard = [];
+        document.getElementById("aviso-origem-dados").innerText = "Sem ligação. Não foi possível obter os dados.";
+        document.getElementById("aviso-origem-dados").style.color = "#b71c1c";
       }
       processarMetricas();
     }
-    if (tab === 'conf') carregarConfiguracoesGerente();
+    if (tab === 'tesouraria') {
+      carregarSaldosGerente();
+    }
+    if (tab === 'conf') {
+      carregarConfiguracoesGerente();
+    }
   }
 
   function analisarData(dataStr) {
@@ -720,10 +770,18 @@
     let contagemToppings = {};
     let totalToppings = 0;
 
+    let vendasDinheiro = 0;
+    let vendasMBWay = 0;
+    let vendasSumUp = 0;
+
     histFiltrado.forEach(venda => {
       let precoVenda = parseFloat(venda.preco);
       if (isNaN(precoVenda)) precoVenda = 0;
       totalFaturacao += precoVenda;
+
+      if (venda.pagamento === "Dinheiro") vendasDinheiro += precoVenda;
+      if (venda.pagamento === "MBWay") vendasMBWay += precoVenda;
+      if (venda.pagamento === "SumUp") vendasSumUp += precoVenda;
       
       let artigoNome = venda.artigo || "";
       let custoCopo = configCustos.acai[artigoNome] || 0;
@@ -778,6 +836,10 @@
     let mediaTop = countCopos > 0 ? totalToppings / countCopos : 0;
     let custoMedio = countCopos > 0 ? totalCusto / countCopos : 0;
 
+    let atualDinheiro = configSaldos.Dinheiro + vendasDinheiro;
+    let atualMBWay = configSaldos.MBWay + vendasMBWay;
+    let atualSumUp = configSaldos.SumUp + vendasSumUp;
+
     document.getElementById("met-faturacao").innerText = totalFaturacao.toFixed(2) + " €";
     document.getElementById("met-copos").innerText = countCopos;
     document.getElementById("met-ticket").innerText = ticketMedio.toFixed(2) + " €";
@@ -787,6 +849,25 @@
     document.getElementById("met-tamanho").innerText = tamanhoFavorito.toUpperCase();
     document.getElementById("met-topping").innerText = toppingFavorito.toUpperCase();
     document.getElementById("met-media-toppings").innerText = mediaTop.toFixed(1);
+
+    document.getElementById("track-dinheiro").innerText = atualDinheiro.toFixed(2) + " €";
+    document.getElementById("track-mbway").innerText = atualMBWay.toFixed(2) + " €";
+    document.getElementById("track-sumup").innerText = atualSumUp.toFixed(2) + " €";
+  }
+
+  function carregarSaldosGerente() {
+    document.getElementById("cfg-saldo-dinheiro").value = configSaldos.Dinheiro;
+    document.getElementById("cfg-saldo-mbway").value = configSaldos.MBWay;
+    document.getElementById("cfg-saldo-sumup").value = configSaldos.SumUp;
+  }
+
+  function guardarSaldosGerente() {
+    configSaldos.Dinheiro = parseFloat(document.getElementById("cfg-saldo-dinheiro").value) || 0;
+    configSaldos.MBWay = parseFloat(document.getElementById("cfg-saldo-mbway").value) || 0;
+    configSaldos.SumUp = parseFloat(document.getElementById("cfg-saldo-sumup").value) || 0;
+    localStorage.setItem('configSaldos', JSON.stringify(configSaldos));
+    alert("Saldos iniciais guardados com sucesso.");
+    processarMetricas();
   }
 
   function carregarConfiguracoesGerente() {

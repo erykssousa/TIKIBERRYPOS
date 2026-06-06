@@ -12,14 +12,14 @@
   h3 { margin-top: 0; font-size: 18px; }
   .subtitulo-categoria { margin-top: 15px; margin-bottom: 10px; font-weight: normal; color: #555; font-size: 16px; text-transform: uppercase; }
   label { display: block; margin-bottom: 10px; font-size: 16px; }
-  input[type="text"], input[type="password"], input[type="number"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; margin-bottom: 10px; }
+  input[type="text"], input[type="password"], input[type="number"], select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; margin-bottom: 10px; }
   button { width: 100%; padding: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 18px; margin-bottom: 10px; cursor: pointer; }
   .btn-secundario { background-color: #607d8b; }
   .btn-sair { background-color: #f44336; padding: 10px; font-size: 16px; margin-top: 10px; margin-bottom: 0; }
   .btn-adicionar { background-color: #ff9800; }
   .btn-menu { background-color: #2196F3; margin-bottom: 15px; }
 
-  #ecran-menu, #ecran-app, #ecran-pedido, #ecran-revisao, #ecran-pagamento, #ecran-historico { display: none; }
+  #ecran-menu, #ecran-app, #ecran-pedido, #ecran-pagamento, #ecran-historico, #ecran-gerente { display: none; }
 
   .grelha-toppings { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .topping-label { display: block; margin: 0; cursor: pointer; }
@@ -67,6 +67,18 @@
   .estado-bt.aguardar { background-color: #fff9c4; color: #f57f17; }
   .btn-bluetooth { background-color: #7b1fa2; margin-bottom: 8px; }
   .aviso-bluetooth { font-size: 13px; color: #555; background-color: #fff; border-radius: 6px; padding: 10px; margin-top: 8px; line-height: 1.4; }
+
+  .gerente-nav { display: flex; gap: 10px; margin-bottom: 20px; }
+  .gerente-nav button { padding: 10px; font-size: 14px; margin-bottom: 0; }
+  .grid-metricas { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+  .card-metrica { background: #f1f8e9; border: 1px solid #c5e1a5; border-radius: 8px; padding: 15px; text-align: center; }
+  .card-metrica.destaque { background: #e3f2fd; border-color: #90caf9; grid-column: span 2; }
+  .metrica-titulo { font-size: 12px; color: #555; text-transform: uppercase; margin-bottom: 5px; }
+  .metrica-valor { font-size: 22px; color: #2e7d32; font-family: 'Quicksand', sans-serif; }
+  .card-metrica.destaque .metrica-valor { font-size: 28px; color: #1565c0; }
+  .linha-config { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
+  .linha-config input { width: 70px; margin-bottom: 0; padding: 5px; text-align: center; }
+  .linha-config label { margin-bottom: 0; font-size: 14px; flex-grow: 1; }
 </style>
 </head>
 <body>
@@ -85,6 +97,85 @@
     <button class="btn-menu" style="background-color: #9c27b0;" onclick="abrirHistorico()">Histórico Pendente</button>
     <button class="btn-sair" style="width: 100%;" onclick="terminarSessao()">Terminar Sessão</button>
   </div>
+</div>
+
+<div id="ecran-gerente">
+  <div class="seccao" style="background-color: #37474f; color: white; border: none;">
+    <h3 style="margin-bottom: 5px; color: white;">Painel de Gerência</h3>
+    <div style="font-size: 14px; opacity: 0.8;">Análise de Vendas e Custos</div>
+  </div>
+  
+  <div class="gerente-nav">
+    <button id="btn-tab-dash" class="btn-menu" onclick="mostrarTabGerente('dash')">Dashboard</button>
+    <button id="btn-tab-conf" class="btn-secundario" onclick="mostrarTabGerente('conf')">Custos</button>
+  </div>
+
+  <div id="tab-dash-gerente">
+    <div class="seccao">
+      <label>Filtro de Tempo</label>
+      <select id="filtro-tempo" onchange="processarMetricas()">
+        <option value="hoje">Hoje</option>
+        <option value="3dias">Últimos 3 Dias</option>
+        <option value="total" selected>Total</option>
+      </select>
+    </div>
+
+    <div class="grid-metricas">
+      <div class="card-metrica destaque">
+        <div class="metrica-titulo">Faturação Total</div>
+        <div class="metrica-valor" id="met-faturacao">A carregar...</div>
+      </div>
+      <div class="card-metrica">
+        <div class="metrica-titulo">Copos Vendidos</div>
+        <div class="metrica-valor" id="met-copos">0</div>
+      </div>
+      <div class="card-metrica">
+        <div class="metrica-titulo">Ticket Médio</div>
+        <div class="metrica-valor" id="met-ticket">0.00 €</div>
+      </div>
+      <div class="card-metrica">
+        <div class="metrica-titulo">Custo Total</div>
+        <div class="metrica-valor" id="met-custo-total" style="color: #d32f2f;">0.00 €</div>
+      </div>
+      <div class="card-metrica">
+        <div class="metrica-titulo">Lucro Estimado</div>
+        <div class="metrica-valor" id="met-lucro">0.00 €</div>
+      </div>
+      <div class="card-metrica destaque">
+        <div class="metrica-titulo">Custo Médio por Copo (Raw)</div>
+        <div class="metrica-valor" id="met-custo-medio" style="color: #e65100;">0.00 €</div>
+      </div>
+      <div class="card-metrica">
+        <div class="metrica-titulo">Tamanho Favorito</div>
+        <div class="metrica-valor" id="met-tamanho" style="font-size: 16px;">-</div>
+      </div>
+      <div class="card-metrica">
+        <div class="metrica-titulo">Topping Favorito</div>
+        <div class="metrica-valor" id="met-topping" style="font-size: 16px;">-</div>
+      </div>
+      <div class="card-metrica destaque">
+        <div class="metrica-titulo">Média de Toppings por Copo</div>
+        <div class="metrica-valor" id="met-media-toppings">0.0</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-conf-gerente" style="display: none;">
+    <div class="seccao">
+      <h3>Custo Base do Açaí (€)</h3>
+      <div class="linha-config"><label>Pequeno</label><input type="number" step="0.01" id="cfg-acai-peq"></div>
+      <div class="linha-config"><label>Médio</label><input type="number" step="0.01" id="cfg-acai-med"></div>
+      <div class="linha-config" style="border:none;"><label>Grande</label><input type="number" step="0.01" id="cfg-acai-gra"></div>
+    </div>
+    <div class="seccao">
+      <h3>Custos dos Toppings</h3>
+      <p style="font-size: 12px; color: #666;">Define o preço pago por Kg e quantas gramas leva uma dose normal.</p>
+      <div id="lista-configs-toppings"></div>
+    </div>
+    <button class="btn-adicionar" onclick="guardarConfiguracoesGerente()">Guardar Custos</button>
+  </div>
+
+  <button class="btn-sair" onclick="terminarSessao()">Sair da Gerência</button>
 </div>
 
 <div id="ecran-app">
@@ -242,29 +333,20 @@
       <span class="contador-carrinho" id="texto-contador">0 copos no pedido</span>
     </div>
 
-    <button onclick="irParaRevisao()">Avançar para Revisão</button>
-  </div>
-
-  <div id="ecran-revisao">
-    <div class="seccao">
-      <button class="btn-secundario" onclick="voltarAoPedido()">Voltar ao Pedido</button>
-    </div>
-    <div class="seccao">
-      <h3>Revisão de Pedido e Nomes</h3>
-      <p>Confere os copos e escreve o nome do cliente em cada um.</p>
-    </div>
-    <div id="lista-revisao"></div>
-    <div class="seccao">
-      <h3>Pré-visualização das Etiquetas</h3>
-      <div id="ticket-preview" style="display: flex; flex-direction: column; align-items: center;"></div>
-    </div>
     <button onclick="irParaPagamento()">Avançar para Pagamento</button>
   </div>
 
   <div id="ecran-pagamento">
     <div class="seccao">
-      <button class="btn-secundario" onclick="voltarARevisao()">Voltar à Revisão</button>
+      <button class="btn-secundario" onclick="voltarAoPedido()">Voltar ao Pedido</button>
     </div>
+    
+    <div class="seccao">
+      <h3>Nomes dos Clientes</h3>
+      <p>Escreve o nome do cliente em cada copo.</p>
+      <div id="lista-nomes"></div>
+    </div>
+
     <div class="seccao">
       <h3>Tipo de Pagamento</h3>
       <label><input type="radio" name="tipo_conta" value="unica" checked onchange="atualizarInterfacePagamento()"> Conta Única (Um pagamento para tudo)</label>
@@ -309,12 +391,46 @@
   const urlScript = "https://script.google.com/macros/s/AKfycbyHLcT2wppAWipDrhi3y2f0xOHNOsMsNWa3OMzCA79R1uNA_j2tAeBMOmc5yDQB3krcSA/exec";
   let funcionarioLogado = "";
   let carrinho = [];
+  let dadosDashboard = [];
 
   let dispositivoBT = null;
   let caracteristicaBT = null;
 
   const BT_SERVICE_UUID        = "000018f0-0000-1000-8000-00805f9b34fb";
   const BT_CHARACTERISTIC_UUID = "00002af1-0000-1000-8000-00805f9b34fb";
+
+  const precosTamanhos = {
+    "Acai Pequeno": 6.00,
+    "Acai Medio":   8.00,
+    "Acai Grande":  9.50
+  };
+
+  const utilizadoresValidos = {
+    "eryk": "1234",
+    "hugo": "1234",
+    "gerente": "1234"
+  };
+
+  const nomesToppingsBase = [
+    "Leite Condensado", "Mel", "Manteiga Amendoim", "Chocolate",
+    "Granola", "Oreo", "Paçoca", "Leite em Po", "Banana", "Morango"
+  ];
+
+  let configCustos = JSON.parse(localStorage.getItem('configCustos'));
+  if (!configCustos) {
+    configCustos = {
+      acai: { "Acai Pequeno": 1.50, "Acai Medio": 2.00, "Acai Grande": 2.50 },
+      toppings: {}
+    };
+    nomesToppingsBase.forEach(t => {
+      configCustos.toppings[t] = { custoKg: 5.00, gramas: 20 };
+    });
+    localStorage.setItem('configCustos', JSON.stringify(configCustos));
+  } else {
+    nomesToppingsBase.forEach(t => {
+      if (!configCustos.toppings[t]) configCustos.toppings[t] = { custoKg: 5.00, gramas: 20 };
+    });
+  }
 
   function atualizarEstadoBT(estado, texto) {
     ["estado-bluetooth-vendas"].forEach(id => {
@@ -477,24 +593,13 @@
     return true;
   }
 
-  const precosTamanhos = {
-    "Acai Pequeno": 6.00,
-    "Acai Medio":   8.00,
-    "Acai Grande":  9.50
-  };
-
-  const utilizadoresValidos = {
-    "eryk": "1234",
-    "hugo": "1234"
-  };
-
   window.onload = function() {
     verificarSessao();
   };
 
   function esconderTudo() {
-    ["ecran-login","ecran-menu","ecran-app","ecran-pedido","ecran-revisao",
-     "ecran-pagamento","ecran-historico"].forEach(id => {
+    ["ecran-login","ecran-menu","ecran-app","ecran-pedido",
+     "ecran-pagamento","ecran-historico","ecran-gerente"].forEach(id => {
       const ecra = document.getElementById(id);
       if (ecra) ecra.style.display = "none";
     });
@@ -504,7 +609,11 @@
     const sessaoGuardada = localStorage.getItem('funcionarioLogado');
     if (sessaoGuardada) {
       funcionarioLogado = sessaoGuardada;
-      mostrarMenu();
+      if (funcionarioLogado === "gerente") {
+        mostrarEcraGerente();
+      } else {
+        mostrarMenu();
+      }
     } else {
       esconderTudo();
       document.getElementById("ecran-login").style.display = "block";
@@ -519,7 +628,11 @@
       localStorage.setItem('funcionarioLogado', user);
       document.getElementById("usuario").value = "";
       document.getElementById("palavra-passe").value = "";
-      mostrarMenu();
+      if (user === "gerente") {
+        mostrarEcraGerente();
+      } else {
+        mostrarMenu();
+      }
     } else {
       alert("Utilizador ou palavra-passe incorretos.");
     }
@@ -548,6 +661,170 @@
       limparFormularioPedido();
       atualizarContador();
     }
+  }
+
+  function mostrarEcraGerente() {
+    esconderTudo();
+    document.getElementById("ecran-gerente").style.display = "block";
+    mostrarTabGerente('dash');
+  }
+
+  async function mostrarTabGerente(tab) {
+    document.getElementById("tab-dash-gerente").style.display = tab === 'dash' ? "block" : "none";
+    document.getElementById("tab-conf-gerente").style.display = tab === 'conf' ? "block" : "none";
+    document.getElementById("btn-tab-dash").className = tab === 'dash' ? "btn-menu" : "btn-secundario";
+    document.getElementById("btn-tab-conf").className = tab === 'conf' ? "btn-menu" : "btn-secundario";
+    
+    if (tab === 'dash') {
+      document.getElementById("met-faturacao").innerText = "A carregar...";
+      try {
+        const resposta = await fetch(urlScript + "?acao=obter_vendas");
+        const dadosFolha = await resposta.json();
+        dadosDashboard = dadosFolha;
+      } catch (e) {
+        dadosDashboard = JSON.parse(localStorage.getItem('historicoVendas') || "[]");
+      }
+      processarMetricas();
+    }
+    if (tab === 'conf') carregarConfiguracoesGerente();
+  }
+
+  function analisarData(dataStr) {
+    if (!dataStr) return new Date(0);
+    const partes = dataStr.split('/');
+    if (partes.length === 3) {
+      return new Date(partes[2], partes[1] - 1, partes[0]);
+    }
+    return new Date(dataStr);
+  }
+
+  function processarMetricas() {
+    const filtro = document.getElementById("filtro-tempo").value;
+    const agora = new Date();
+    const hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+    
+    let tresDiasAtras = new Date(hoje);
+    tresDiasAtras.setDate(tresDiasAtras.getDate() - 3);
+
+    let histFiltrado = dadosDashboard.filter(venda => {
+      const dataVenda = analisarData(venda.data);
+      if (filtro === "hoje") return dataVenda >= hoje;
+      if (filtro === "3dias") return dataVenda >= tresDiasAtras;
+      return true;
+    });
+
+    let totalFaturacao = 0;
+    let totalCusto = 0;
+    let countCopos = histFiltrado.length;
+    let contagemTamanhos = {};
+    let contagemToppings = {};
+    let totalToppings = 0;
+
+    histFiltrado.forEach(venda => {
+      let precoVenda = parseFloat(venda.preco);
+      if (isNaN(precoVenda)) precoVenda = 0;
+      totalFaturacao += precoVenda;
+      
+      let artigoNome = venda.artigo || "";
+      let custoCopo = configCustos.acai[artigoNome] || 0;
+      contagemTamanhos[artigoNome] = (contagemTamanhos[artigoNome] || 0) + 1;
+
+      let toppingsProcessados = [];
+      if (venda.toppings && typeof venda.toppings === "string" && venda.toppings.trim() !== "") {
+        let recortes = venda.toppings.split(", ");
+        recortes.forEach(recorte => {
+          let doseNum = 0;
+          let nomeLimpo = recorte;
+          if (recorte.startsWith("Mais ")) { doseNum = 1; nomeLimpo = recorte.replace("Mais ", ""); }
+          else if (recorte.startsWith("Menos ")) { doseNum = -1; nomeLimpo = recorte.replace("Menos ", ""); }
+          toppingsProcessados.push({ nome: nomeLimpo, dose: doseNum });
+        });
+      } else if (venda.toppingsRaw && venda.toppingsRaw.length > 0) {
+        toppingsProcessados = venda.toppingsRaw;
+      }
+
+      if (toppingsProcessados.length > 0) {
+        totalToppings += toppingsProcessados.length;
+        toppingsProcessados.forEach(tr => {
+          contagemToppings[tr.nome] = (contagemToppings[tr.nome] || 0) + 1;
+          let configTop = configCustos.toppings[tr.nome];
+          if (configTop) {
+            let mult = 1;
+            if (tr.dose === 1) mult = 1.5;
+            if (tr.dose === -1) mult = 0.5;
+            let gramas = configTop.gramas * mult;
+            let custoGrama = configTop.custoKg / 1000;
+            custoCopo += (gramas * custoGrama);
+          }
+        });
+      }
+      totalCusto += custoCopo;
+    });
+
+    let tamanhoFavorito = "-";
+    let maxTam = 0;
+    for (let t in contagemTamanhos) {
+      if (contagemTamanhos[t] > maxTam) { maxTam = contagemTamanhos[t]; tamanhoFavorito = t.replace("Acai ", ""); }
+    }
+
+    let toppingFavorito = "-";
+    let maxTop = 0;
+    for (let t in contagemToppings) {
+      if (contagemToppings[t] > maxTop) { maxTop = contagemToppings[t]; toppingFavorito = t; }
+    }
+
+    let ticketMedio = countCopos > 0 ? totalFaturacao / countCopos : 0;
+    let lucro = totalFaturacao - totalCusto;
+    let mediaTop = countCopos > 0 ? totalToppings / countCopos : 0;
+    let custoMedio = countCopos > 0 ? totalCusto / countCopos : 0;
+
+    document.getElementById("met-faturacao").innerText = totalFaturacao.toFixed(2) + " €";
+    document.getElementById("met-copos").innerText = countCopos;
+    document.getElementById("met-ticket").innerText = ticketMedio.toFixed(2) + " €";
+    document.getElementById("met-custo-total").innerText = totalCusto.toFixed(2) + " €";
+    document.getElementById("met-lucro").innerText = lucro.toFixed(2) + " €";
+    document.getElementById("met-custo-medio").innerText = custoMedio.toFixed(2) + " €";
+    document.getElementById("met-tamanho").innerText = tamanhoFavorito.toUpperCase();
+    document.getElementById("met-topping").innerText = toppingFavorito.toUpperCase();
+    document.getElementById("met-media-toppings").innerText = mediaTop.toFixed(1);
+  }
+
+  function carregarConfiguracoesGerente() {
+    document.getElementById("cfg-acai-peq").value = configCustos.acai["Acai Pequeno"];
+    document.getElementById("cfg-acai-med").value = configCustos.acai["Acai Medio"];
+    document.getElementById("cfg-acai-gra").value = configCustos.acai["Acai Grande"];
+
+    let htmlTop = "";
+    nomesToppingsBase.forEach(t => {
+      let cfg = configCustos.toppings[t];
+      htmlTop += `
+        <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+          <div style="font-weight: normal; margin-bottom: 5px;">${t}</div>
+          <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;"><label style="font-size: 12px; color: #555;">€ / Kg</label><input type="number" step="0.01" id="cfg-top-kg-${t}" value="${cfg.custoKg}"></div>
+            <div style="flex: 1;"><label style="font-size: 12px; color: #555;">Gramas p/ dose</label><input type="number" id="cfg-top-gr-${t}" value="${cfg.gramas}"></div>
+          </div>
+        </div>
+      `;
+    });
+    document.getElementById("lista-configs-toppings").innerHTML = htmlTop;
+  }
+
+  function guardarConfiguracoesGerente() {
+    configCustos.acai["Acai Pequeno"] = parseFloat(document.getElementById("cfg-acai-peq").value) || 0;
+    configCustos.acai["Acai Medio"] = parseFloat(document.getElementById("cfg-acai-med").value) || 0;
+    configCustos.acai["Acai Grande"] = parseFloat(document.getElementById("cfg-acai-gra").value) || 0;
+
+    nomesToppingsBase.forEach(t => {
+      let kgStr = document.getElementById("cfg-top-kg-" + t).value;
+      let grStr = document.getElementById("cfg-top-gr-" + t).value;
+      configCustos.toppings[t].custoKg = parseFloat(kgStr) || 0;
+      configCustos.toppings[t].gramas = parseFloat(grStr) || 0;
+    });
+
+    localStorage.setItem('configCustos', JSON.stringify(configCustos));
+    alert("Custos guardados com sucesso.");
+    mostrarTabGerente('dash');
   }
 
   function obterNumeroPedidoAtual() {
@@ -660,21 +937,9 @@
     }
   }
 
-  function irParaRevisao() {
-    if (carrinho.length === 0) { alert("Não tens nenhum copo no pedido. Adiciona pelo menos um para avançar."); return; }
-    document.getElementById("ecran-pedido").style.display = "none";
-    document.getElementById("ecran-revisao").style.display = "block";
-    atualizarInterfaceRevisao();
-  }
-
   function voltarAoPedido() {
-    document.getElementById("ecran-revisao").style.display = "none";
-    document.getElementById("ecran-pedido").style.display = "block";
-  }
-
-  function voltarARevisao() {
     document.getElementById("ecran-pagamento").style.display = "none";
-    document.getElementById("ecran-revisao").style.display = "block";
+    document.getElementById("ecran-pedido").style.display = "block";
   }
 
   function atualizarNomeCopo(index, valor) {
@@ -685,11 +950,12 @@
     carrinho.splice(index, 1);
     atualizarContador();
     if (carrinho.length === 0) { voltarAoPedido(); return; }
-    atualizarInterfaceRevisao();
+    atualizarInterfaceNomes();
+    atualizarInterfacePagamento();
   }
 
-  function atualizarInterfaceRevisao() {
-    const listaContainer = document.getElementById("lista-revisao");
+  function atualizarInterfaceNomes() {
+    const listaContainer = document.getElementById("lista-nomes");
     let htmlLista = "";
     for (let i = 0; i < carrinho.length; i++) {
       const copo      = carrinho[i];
@@ -703,12 +969,11 @@
           <div class="item-toppings">${copo.toppingsTexto || "Sem toppings"}</div>
           <input type="text" id="nome-cliente-${i}" placeholder="NOME PARA ESTE COPO" value="${nomeValue}"
             style="text-transform: uppercase;"
-            oninput="this.value = this.value.toUpperCase(); atualizarNomeCopo(${i}, this.value); atualizarPreviewTickets()">
+            oninput="this.value = this.value.toUpperCase(); atualizarNomeCopo(${i}, this.value);">
         </div>
       `;
     }
     listaContainer.innerHTML = htmlLista;
-    atualizarPreviewTickets();
   }
 
   function gerarHtmlTicket(copo, numeroApresentacao, metodoPagamento) {
@@ -759,24 +1024,11 @@
     `;
   }
 
-  function atualizarPreviewTickets() {
-    const previewContainer = document.getElementById("ticket-preview");
-    previewContainer.innerHTML = "";
-    const numeroStr = gerarIdPedidoUnico();
-    for (let i = 0; i < carrinho.length; i++) {
-      previewContainer.innerHTML += gerarHtmlTicket(carrinho[i], numeroStr, null);
-    }
-  }
-
   function irParaPagamento() {
-    for (let i = 0; i < carrinho.length; i++) {
-      if (!carrinho[i].cliente || carrinho[i].cliente.trim() === "") {
-        alert(`Por favor, escreve o nome para o Copo ${i + 1} antes de avançares.`);
-        return;
-      }
-    }
-    document.getElementById("ecran-revisao").style.display = "none";
+    if (carrinho.length === 0) { alert("Não tens nenhum copo no pedido. Adiciona pelo menos um para avançar."); return; }
+    document.getElementById("ecran-pedido").style.display = "none";
     document.getElementById("ecran-pagamento").style.display = "block";
+    atualizarInterfaceNomes();
     atualizarInterfacePagamento();
   }
 
@@ -802,7 +1054,7 @@
         const copo = carrinho[i];
         htmlSeparado += `
           <div class="bloco-pagamento">
-            <div class="titulo-pagamento">Copo ${i + 1}: ${copo.cliente}</div>
+            <div class="titulo-pagamento">Copo ${i + 1}: ${copo.cliente || "A Aguardar Nome..."}</div>
             <div class="valor-destaque">${copo.preco.toFixed(2)} €</div>
             <div style="margin-bottom: 10px;">
               <label style="font-size: 14px;"><input type="radio" name="pag_item_${i}" value="Pagar Depois" onchange="verificarDinheiroSeparado(${i}, this.value)"> Pagar Depois</label>
@@ -845,6 +1097,13 @@
   }
 
   async function registarVenda() {
+    for (let i = 0; i < carrinho.length; i++) {
+      if (!carrinho[i].cliente || carrinho[i].cliente.trim() === "") {
+        alert(`Por favor, escreve o nome para o Copo ${i + 1} antes de gravar a venda.`);
+        return;
+      }
+    }
+
     const tipoConta = document.querySelector('input[name="tipo_conta"]:checked').value;
     let pagamentos  = [];
 
@@ -888,6 +1147,7 @@
         hora:       horaVenda,
         artigo:     carrinho[i].artigo,
         toppings:   carrinho[i].toppingsTexto,
+        toppingsRaw: carrinho[i].toppingsRaw,
         preco:      carrinho[i].preco,
         pagamento:  pagamentos[i],
         cliente:    carrinho[i].cliente,
@@ -920,7 +1180,7 @@
   function guardarVendaNoHistorico(dadosCopo) {
     let hist = JSON.parse(localStorage.getItem('historicoVendas') || "[]");
     hist.push(dadosCopo);
-    if (hist.length > 150) hist.shift();
+    if (hist.length > 5000) hist.shift();
     localStorage.setItem('historicoVendas', JSON.stringify(hist));
   }
 

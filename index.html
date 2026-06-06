@@ -426,7 +426,8 @@
     const abreviaturas = {
       "Leite Condensado": "Leite Cond.",
       "Manteiga Amendoim": "Mant. Amend.",
-      "Leite em Po":       "Leite em Po"
+      "Leite em Po":       "Leite em Po",
+      "Paçoca":            "Pacoca"
     };
 
     function textBytes(str) {
@@ -439,6 +440,17 @@
 
     function linha(texto) { return [...textBytes(texto), LF]; }
     function separador()  { return linha("--------------------------------"); }
+
+    // Formata um topping com prefixo (+/-) e padding fixo para coluna de 16 chars
+    function formatarTopping(tr) {
+      const nome = abreviaturas[tr.nome] ? abreviaturas[tr.nome] : tr.nome;
+      let prefixo = "  ";
+      if (tr.dose === 1)  prefixo = "+ ";
+      if (tr.dose === -1) prefixo = "- ";
+      const texto = prefixo + nome;
+      // Pad à direita até 16 caracteres para alinhar a segunda coluna
+      return texto.padEnd(16).slice(0, 16);
+    }
 
     const nomeCliente = copo.cliente || "CLIENTE";
     const tamanho     = copo.artigo.replace("Acai ", "").toUpperCase();
@@ -468,18 +480,17 @@
     bytes.push(GS, 0x21, 0x00);
     bytes.push(...separador());
 
-    // Toppings — alinhar à esquerda
+    // Toppings — 2 por linha (coluna esquerda + coluna direita)
     bytes.push(ESC, 0x61, 0x00);
     bytes.push(ESC, 0x45, 0x00);
 
     if (copo.toppingsRaw && copo.toppingsRaw.length > 0) {
-      for (let i = 0; i < copo.toppingsRaw.length; i++) {
-        const tr    = copo.toppingsRaw[i];
-        const nome  = abreviaturas[tr.nome] ? abreviaturas[tr.nome] : tr.nome;
-        let prefixo = "  ";
-        if (tr.dose === 1)  prefixo = "+ ";
-        if (tr.dose === -1) prefixo = "- ";
-        bytes.push(...linha(prefixo + nome));
+      for (let i = 0; i < copo.toppingsRaw.length; i += 2) {
+        const esquerda = formatarTopping(copo.toppingsRaw[i]);
+        const direita  = (i + 1 < copo.toppingsRaw.length)
+                         ? formatarTopping(copo.toppingsRaw[i + 1])
+                         : "";
+        bytes.push(...linha(esquerda + direita));
       }
     } else {
       bytes.push(...linha("  SEM TOPPINGS"));
